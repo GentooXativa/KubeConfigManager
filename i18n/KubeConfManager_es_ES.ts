@@ -4,10 +4,6 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <source>MainWindow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Working Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -53,6 +49,10 @@
     </message>
     <message>
         <source>Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KubeConfigManager</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
