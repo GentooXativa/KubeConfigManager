@@ -71,6 +71,10 @@ void MainWindow::on_actionReload_triggered()
         return;
     }
 
+    contextModelUpdated(QStringList());
+    clusterModelUpdated(QStringList());
+    userModelUpdated(QStringList());
+
     QDir directory(workingDirectory);
     QStringListModel *fileModel = new QStringListModel(directory.entryList(QDir::Files), this );
     ui->listViewFiles->setModel(fileModel);
