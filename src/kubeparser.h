@@ -7,7 +7,7 @@
 struct KubeContext
 {
     QString name;
-    QMap<QString, QVariant> context;
+    QMap<QString, QString> context;
 };
 
 class KubeParser : public QObject

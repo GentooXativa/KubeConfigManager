@@ -50,11 +50,36 @@ bool KubeParser::load()
             KubeContext ctx;
             ctx.name = QString::fromStdString(context["name"].as<std::string>().c_str());
 
-            const std::map<std::string, std::string> clusterCtxMap = context["context"].as<std::map<std::string, std::string>>();
-            QMap<QString, QVariant> ctxDetails;
-            const auto clusterName = clusterCtxMap.find("cluster")->second;
-            ctxDetails.insert("cluster", QString(clusterName.c_str()));
+            QMap<QString, QString> ctxDetails;
+            for (YAML::const_iterator it = context.begin(); it != context.end(); ++it)
+            {
+                YAML::Node fnode = it->first;
+                YAML::Node snode = it->second;
+
+                if (snode.IsScalar())
+                {
+                    qDebug() << "\tScalar type |" << snode.as<std::string>().c_str();
+                }
+                else if (snode.IsMap())
+                {
+                    QString clusterName(snode["cluster"].as<std::string>().c_str());
+                    QString userName(snode["user"].as<std::string>().c_str());
+
+                    ctxDetails.insert(QString("cluster"), clusterName);
+                    ctxDetails.insert(QString("user"), userName);
+
+                    qDebug() << "\tMap type | Cluster:" << clusterName << " | User:" << userName;
+
+                    ctx.context = ctxDetails;
+                }
+                else
+                {
+                    qDebug() << "\tUnhandled type";
+                }
+            }
+            this->contexts->append(ctx);
         }
+
         emit contextsLoaded(contexts);
     }
 
