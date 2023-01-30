@@ -7,7 +7,10 @@
 #include <QStringListModel>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -25,22 +28,22 @@ private slots:
     void on_listViewFiles_activated(const QModelIndex &index);
 
     void errorLoadingFileParser(const QString message);
-    
-    void clusterModelUpdated(const QStringList clusters );
-    void contextModelUpdated(const QStringList contexts );
-    void userModelUpdated(const QStringList users );
+
+    void contextModelUpdated(const QStringList contexts);
+
+    void on_actionSettings_triggered();
+    void loadSettings();
+    void clearView();
 
 private:
-    void    loadSettings();
-    void    setWorkingDirectory(QString, bool);
+    void setWorkingDirectory(QString, bool);
+    bool checkResourcesAndDirectories();
 
-    Ui::MainWindow  *ui;
-    bool    uiHasBeenInitialized;
-    QSettings       *appSettings;
-    QString     workingDirectory;
+    Ui::MainWindow *ui;
+    bool uiHasBeenInitialized;
+    QSettings *appSettings;
+    QString workingDirectory;
 
-    QStringListModel    *clustersModel;
-    QStringListModel    *contextsModel;
-    QStringListModel    *usersModel;
+    QStringListModel *contextsModel;
 };
 #endif // MAINWINDOW_H

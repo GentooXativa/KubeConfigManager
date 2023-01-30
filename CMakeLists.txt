@@ -18,9 +18,13 @@ set(TS_FILES i18n/KubeConfManager_es_ES.ts)
 
 set(PROJECT_SOURCES
         src/main.cpp
+        src/KubeConfManager.h
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        src/settingsform.cpp
+        src/settingsform.h
+        src/settingsform.ui
         src/kubeparser.cpp
         src/kubeparser.h
         ${TS_FILES}

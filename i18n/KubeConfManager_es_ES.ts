@@ -56,4 +56,31 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>SettingsForm</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WorkingDirectory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DisabledFolderPath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GroupBox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Backup configuration before save</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>
