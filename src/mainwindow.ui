@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>KubeConfigManager</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../assets.qrc">
+    <normaloff>:/logo/assets/logo.png</normaloff>:/logo/assets/logo.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0" colspan="2">
@@ -89,54 +93,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-     </layout>
-    </item>
-    <item row="1" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QListView" name="listViewFiles">
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Configuration Files</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>
@@ -246,6 +202,31 @@
    <addaction name="separator"/>
    <addaction name="actionQuit"/>
   </widget>
+  <widget class="QDockWidget" name="dockWidgetConfigurationFiles">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Configuration Files</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QListView" name="listViewFiles">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionSettings">
    <property name="icon">
     <iconset theme="preferences-system">
@@ -279,7 +260,24 @@
     <string>Reload</string>
    </property>
   </action>
+  <action name="actionSwitchContext">
+   <property name="icon">
+    <iconset theme="system-run">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Switch context</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch to another context</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../assets.qrc"/>
+ </resources>
  <connections/>
 </ui>

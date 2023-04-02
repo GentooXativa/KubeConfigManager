@@ -22,15 +22,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->listViewContexts->setModel(contextsModel);
 
     this->loadSettings();
+    this->clearView();
 
     if (!workingDirectory.isEmpty())
     {
         ui->lineEditWorkingDirectory->setText(workingDirectory);
+        this->on_actionReload_triggered();
     }
 
-    this->clearView();
-
     uiHasBeenInitialized = true;
+    this->createTrayIcon();
+
+    connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
 }
 
 MainWindow::~MainWindow()
@@ -129,10 +132,10 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
     connect(&parser, &KubeParser::errorLoadingFile, this, &MainWindow::errorLoadingFileParser);
 
     connect(&parser, &KubeParser::contextsLoaded, this, &MainWindow::contextModelUpdated);
-
-    ui->textEditContextInformation->setMarkdown("Cluster test\n* First\n* Second");
+    connect(&parser, &KubeParser::contextListLoaded, this, &MainWindow::contextListUpdated);
 
     parser.load();
+//    systemTrayIcon->showMessage("Test", "test 2",QSystemTrayIcon::Information);
 }
 
 void MainWindow::contextModelUpdated(const QStringList contexts)
@@ -163,11 +166,64 @@ void MainWindow::clearView()
 
     ui->textEditContextInformation->setMarkdown(
                 QString("# Welcome to %1 v%2\n\n---\n* This section is a work in progress...\n\n\n ![Test](https://www.one-beyond.com/wpcms/wp-content/themes/dcsl/assets/images/logo-animated.gif)")
-                .arg(APP_NAME)
-                .arg(APP_VERSION)
+                .arg(APP_NAME, APP_VERSION)
     );
 }
 
 bool MainWindow::checkResourcesAndDirectories(){
     return true;
+}
+
+void MainWindow::createTrayIcon(){
+    systemTrayMenu = new QMenu(this);
+    systemTrayMenu->addAction(ui->actionSwitchContext);
+    systemTrayMenu->addSeparator();
+    systemTrayMenu->addAction(ui->actionQuit);
+
+    appIcon = new QIcon(":/logo/assets/logo.png" );
+
+    systemTrayIcon = new QSystemTrayIcon( *appIcon, this);
+    systemTrayIcon->setVisible(true);
+    systemTrayIcon->setContextMenu(systemTrayMenu);
+}
+
+void MainWindow::on_actionSwitchContext_triggered()
+{
+    QDialog mine(this);
+}
+
+void MainWindow::reloadDefaultConfiguration(){
+
+}
+
+void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
+{
+    qDebug() << "Context activated:" << index.data().toString();
+    qDebug() << "Contexts loaded:" << this->contexts->size();
+    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i){
+         KubeContext current = *i;
+         if( current.name == index.data().toString()){
+             this->selectedContext = current;
+             emit contextHasBeenSelected();
+             return;
+         }
+    }
+}
+
+
+void MainWindow::contextListUpdated(KubeContextList *contexts) {
+    this->contexts = contexts;
+}
+
+void MainWindow::onContextSelected(){
+    qDebug() << "New context selected:" << this->selectedContext.name;
+    this->updateContextInformationText();
+}
+
+void MainWindow::updateContextInformationText(){
+    QString text(QString("Cluster %1\n    User: %2\n").arg(
+        this->selectedContext.name,
+        this->selectedContext.name
+    ));
+    ui->textEditContextInformation->setMarkdown(text);
 }

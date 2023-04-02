@@ -20,7 +20,7 @@ bool KubeParser::load()
     QStringList contexts;
     QStringList users;
 
-    this->contexts = new QList<KubeContext>();
+    this->contexts = new KubeContextList();
 
     if (!file.exists())
     {
@@ -81,6 +81,7 @@ bool KubeParser::load()
         }
 
         emit contextsLoaded(contexts);
+        emit contextListLoaded(this->contexts);
     }
 
     if (config["users"])
@@ -99,4 +100,8 @@ bool KubeParser::load()
 bool KubeParser::save()
 {
     return false;
+}
+
+KubeContext * KubeParser::getContextByName(const QString name) {
+
 }

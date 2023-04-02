@@ -25,8 +25,12 @@ set(PROJECT_SOURCES
         src/settingsform.cpp
         src/settingsform.h
         src/settingsform.ui
+        src/switchcontextform.cpp
+        src/switchcontextform.h
+        src/switchcontextform.ui
         src/kubeparser.cpp
         src/kubeparser.h
+        assets.qrc
         ${TS_FILES}
 )
 

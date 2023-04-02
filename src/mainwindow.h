@@ -5,6 +5,11 @@
 #include <QSettings>
 #include <QDebug>
 #include <QStringListModel>
+#include <QMenu>
+#include <QSystemTrayIcon>
+#include <QIcon>
+
+#include "KubeConfManager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -30,14 +35,26 @@ private slots:
     void errorLoadingFileParser(const QString message);
 
     void contextModelUpdated(const QStringList contexts);
+    void contextListUpdated(KubeContextList *contexts);
 
     void on_actionSettings_triggered();
     void loadSettings();
     void clearView();
+    void reloadDefaultConfiguration();
+
+    void on_actionSwitchContext_triggered();
+    void on_listViewContexts_activated(const QModelIndex &index);
+
+    void onContextSelected();
+    void updateContextInformationText();
+
+signals:
+    void contextHasBeenSelected();
 
 private:
     void setWorkingDirectory(QString, bool);
     bool checkResourcesAndDirectories();
+    void createTrayIcon();
 
     Ui::MainWindow *ui;
     bool uiHasBeenInitialized;
@@ -45,5 +62,11 @@ private:
     QString workingDirectory;
 
     QStringListModel *contextsModel;
+    QMenu   *systemTrayMenu;
+    QSystemTrayIcon *systemTrayIcon;
+    QIcon *appIcon;
+
+    KubeContextList *contexts;
+    KubeContext selectedContext;
 };
 #endif // MAINWINDOW_H

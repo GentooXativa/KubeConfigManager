@@ -4,11 +4,7 @@
 #include <QObject>
 #include <QMap>
 
-struct KubeContext
-{
-    QString name;
-    QMap<QString, QString> context;
-};
+#include "KubeConfManager.h"
 
 class KubeParser : public QObject
 {
@@ -19,16 +15,19 @@ public:
     bool load();
     bool save();
 
+    KubeContext *getContextByName(const QString name);
+
 signals:
     void errorLoadingFile(QString message);
     void clustersLoaded(QStringList clusters);
     void contextsLoaded(QStringList contexts);
     void usersLoaded(QStringList users);
 
+    void contextListLoaded(KubeContextList*);
 private:
     QString path;
 
-    QList<KubeContext> *contexts;
+    KubeContextList *contexts;
 };
 
 #endif // KUBEPARSER_H
