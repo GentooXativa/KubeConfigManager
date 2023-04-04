@@ -9,6 +9,7 @@
 #include <QSystemTrayIcon>
 #include <QIcon>
 
+#include "kubeconfigutils.h"
 #include "KubeConfManager.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,7 +36,7 @@ private slots:
     void errorLoadingFileParser(const QString message);
 
     void contextModelUpdated(const QStringList contexts);
-    void contextListUpdated(KubeContextList *contexts);
+    void kubeConfigUpdated(KubeConfig *kConfig);
 
     void on_actionSettings_triggered();
     void loadSettings();
@@ -62,11 +63,13 @@ private:
     QString workingDirectory;
 
     QStringListModel *contextsModel;
-    QMenu   *systemTrayMenu;
+    QMenu *systemTrayMenu;
     QSystemTrayIcon *systemTrayIcon;
     QIcon *appIcon;
 
     KubeContextList *contexts;
     KubeContext selectedContext;
+    KubeConfig *kubeConfig;
+    KubeConfigUtils *kubeUtils;
 };
 #endif // MAINWINDOW_H

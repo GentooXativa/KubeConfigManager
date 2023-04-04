@@ -30,6 +30,8 @@ set(PROJECT_SOURCES
         src/switchcontextform.ui
         src/kubeparser.cpp
         src/kubeparser.h
+        src/kubeconfigutils.cpp
+        src/kubeconfigutils.h
         assets.qrc
         ${TS_FILES}
 )

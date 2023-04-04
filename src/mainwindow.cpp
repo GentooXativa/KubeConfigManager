@@ -131,11 +131,11 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
 
     connect(&parser, &KubeParser::errorLoadingFile, this, &MainWindow::errorLoadingFileParser);
 
-    connect(&parser, &KubeParser::contextsLoaded, this, &MainWindow::contextModelUpdated);
-    connect(&parser, &KubeParser::contextListLoaded, this, &MainWindow::contextListUpdated);
+    // connect(&parser, &KubeParser::contextsLoaded, this, &MainWindow::contextModelUpdated);
+    connect(&parser, &KubeParser::kubeConfigLoaded, this, &MainWindow::kubeConfigUpdated);
 
     parser.load();
-//    systemTrayIcon->showMessage("Test", "test 2",QSystemTrayIcon::Information);
+    //    systemTrayIcon->showMessage("Test", "test 2",QSystemTrayIcon::Information);
 }
 
 void MainWindow::contextModelUpdated(const QStringList contexts)
@@ -165,24 +165,25 @@ void MainWindow::clearView()
     contextsModel->setStringList(QStringList());
 
     ui->textEditContextInformation->setMarkdown(
-                QString("# Welcome to %1 v%2\n\n---\n* This section is a work in progress...\n\n\n ![Test](https://www.one-beyond.com/wpcms/wp-content/themes/dcsl/assets/images/logo-animated.gif)")
-                .arg(APP_NAME, APP_VERSION)
-    );
+        QString("# Welcome to %1 v%2\n\n---\n* This section is a work in progress...\n\n\n ![Test](https://www.one-beyond.com/wpcms/wp-content/themes/dcsl/assets/images/logo-animated.gif)")
+            .arg(APP_NAME, APP_VERSION));
 }
 
-bool MainWindow::checkResourcesAndDirectories(){
+bool MainWindow::checkResourcesAndDirectories()
+{
     return true;
 }
 
-void MainWindow::createTrayIcon(){
+void MainWindow::createTrayIcon()
+{
     systemTrayMenu = new QMenu(this);
     systemTrayMenu->addAction(ui->actionSwitchContext);
     systemTrayMenu->addSeparator();
     systemTrayMenu->addAction(ui->actionQuit);
 
-    appIcon = new QIcon(":/logo/assets/logo.png" );
+    appIcon = new QIcon(":/logo/assets/logo.png");
 
-    systemTrayIcon = new QSystemTrayIcon( *appIcon, this);
+    systemTrayIcon = new QSystemTrayIcon(*appIcon, this);
     systemTrayIcon->setVisible(true);
     systemTrayIcon->setContextMenu(systemTrayMenu);
 }
@@ -192,38 +193,45 @@ void MainWindow::on_actionSwitchContext_triggered()
     QDialog mine(this);
 }
 
-void MainWindow::reloadDefaultConfiguration(){
-
+void MainWindow::reloadDefaultConfiguration()
+{
 }
 
 void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
     qDebug() << "Context activated:" << index.data().toString();
     qDebug() << "Contexts loaded:" << this->contexts->size();
-    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i){
-         KubeContext current = *i;
-         if( current.name == index.data().toString()){
-             this->selectedContext = current;
-             emit contextHasBeenSelected();
-             return;
-         }
+    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
+    {
+        KubeContext current = *i;
+        if (current.name == index.data().toString())
+        {
+            this->selectedContext = current;
+            emit contextHasBeenSelected();
+            return;
+        }
     }
 }
 
+void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
+{
+    qDebug() << "KubeConfig has been updated";
+    this->kubeConfig = kConfig;
+    this->kubeUtils = new KubeConfigUtils(this->kubeConfig, this);
 
-void MainWindow::contextListUpdated(KubeContextList *contexts) {
-    this->contexts = contexts;
+    KubeContext test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
+    qDebug() << "\tSelected context:" << test.name;
 }
 
-void MainWindow::onContextSelected(){
+void MainWindow::onContextSelected()
+{
     qDebug() << "New context selected:" << this->selectedContext.name;
     this->updateContextInformationText();
 }
 
-void MainWindow::updateContextInformationText(){
-    QString text(QString("Cluster %1\n    User: %2\n").arg(
-        this->selectedContext.name,
-        this->selectedContext.name
-    ));
+void MainWindow::updateContextInformationText()
+{
+    QString text(QString("Cluster %1\n    User: %2\n").arg(this->selectedContext.name, this->selectedContext.name));
     ui->textEditContextInformation->setMarkdown(text);
+    ui->lineEditContextName->setText(this->selectedContext.name);
 }
