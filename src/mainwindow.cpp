@@ -219,8 +219,8 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
     this->kubeConfig = kConfig;
     this->kubeUtils = new KubeConfigUtils(this->kubeConfig, this);
 
-    KubeContext test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
-    qDebug() << "\tSelected context:" << test.name;
+    KubeContext *test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
+    qDebug() << "\tSelected context:" << test->name;
 }
 
 void MainWindow::onContextSelected()

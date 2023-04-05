@@ -11,7 +11,10 @@ class KubeConfigUtils : public QObject
 public:
     explicit KubeConfigUtils(KubeConfig *kConfig, QObject *parent = nullptr);
     QString getCurrentContext();
-    KubeContext getContextByName(QString name);
+
+    KubeContext *getContextByName(QString name);
+    KubeCluster *getClusterByName(QString name);
+    KubeUser *getUserByName(QString name);
 
 signals:
 

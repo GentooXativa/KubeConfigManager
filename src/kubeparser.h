@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 
+#include "kubeconfigutils.h"
 #include "KubeConfManager.h"
 
 class KubeParser : public QObject

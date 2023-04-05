@@ -1,0 +1,26 @@
+kind: Config
+apiVersion: v1
+clusters:
+  - cluster:
+      api-version: v1
+      server: https://kubernetes.default.svc:443
+      certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    name: kubeconfig-cluster
+contexts:
+  - context:
+      cluster: kubeconfig-cluster
+      namespace: default
+      user: kubeconfig-user
+    name: kubeconfig-context
+current-context: kubeconfig-context
+users:
+  - name: kubeconfig-user
+    user:
+      tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+extensions:
+  - extension:
+      bytes: test
+    name: test-extension
+  - extension:
+      bytes: bar
+    name: test-foo

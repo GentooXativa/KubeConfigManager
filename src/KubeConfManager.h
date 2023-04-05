@@ -8,6 +8,7 @@
 #define APP_ISSUES_URL "https://github.com/GentooXativa/KubeConfigManager/issues"
 
 #include <QString>
+#include <QByteArray>
 #include <QMap>
 #include <QVariantMap>
 #include <QDateTime>
@@ -15,8 +16,17 @@
 struct KubeCluster
 {
     QString name;
-    QString caCertificate;
+
     QString server;
+    QString tlsServerName;
+    bool insecureSkipTlsVerify;
+    QString certificateAuthority;
+    QString certificateAuthorityData;
+    QString proxyUrl;
+    bool disableCompression;
+    QMap<QString, QString> extensions;
+
+    QString caCertificate;
 };
 
 struct KubeAuthExec
@@ -33,6 +43,7 @@ struct KubeAuthExec
 struct KubeAuthProvider
 {
     QString name;
+    QMap<QString, QString> config;
 };
 
 struct KubeUser
@@ -49,10 +60,10 @@ struct KubeUser
 struct KubeContext
 {
     QString name;
-    KubeCluster cluster;
-    KubeUser user;
+    KubeCluster *cluster;
+    KubeUser *user;
     QString clusterNamespace;
-    QMap<QString, QString> context;
+    QMap<QString, QString> extensions;
 };
 
 typedef QList<KubeContext> KubeContextList;
