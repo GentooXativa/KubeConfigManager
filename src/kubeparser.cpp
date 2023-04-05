@@ -50,14 +50,40 @@ void KubeParser::load()
             clusters.append(QString::fromStdString(cluster["name"].as<std::string>()));
 
             KubeCluster clusterObj;
+
+            // Required properties
             clusterObj.name = QString::fromStdString(cluster["name"].as<std::string>().c_str());
-
             clusterObj.server = QString::fromStdString(cluster["cluster"]["server"].as<std::string>());
-            qDebug() << "Server         :" << clusterObj.server;
 
+            // Optional properties
             if (cluster["cluster"]["certificate-authority-data"])
             {
-                clusterObj.caCertificate = QString::fromStdString(cluster["cluster"]["certificate-authority-data"].as<std::string>());
+                clusterObj.certificateAuthorityData = QString::fromStdString(cluster["cluster"]["certificate-authority-data"].as<std::string>());
+            }
+
+            if (cluster["cluster"]["certificate-authority"])
+            {
+                clusterObj.certificateAuthority = QString::fromStdString(cluster["cluster"]["certificate-authority"].as<std::string>());
+            }
+
+            if (cluster["cluster"]["tls-server-name"])
+            {
+                clusterObj.tlsServerName = QString::fromStdString(cluster["cluster"]["tls-server-name"].as<std::string>());
+            }
+
+            if (cluster["cluster"]["insecure-skip-tls-verify"])
+            {
+                clusterObj.insecureSkipTlsVerify = cluster["cluster"]["insecure-skip-tls-verify"].as<bool>();
+            }
+
+            if (cluster["cluster"]["disable-compression"])
+            {
+                clusterObj.disableCompression = cluster["cluster"]["disable-compression"].as<bool>();
+            }
+
+            if (cluster["cluster"]["proxy-url"])
+            {
+                clusterObj.proxyUrl = QString::fromStdString(cluster["cluster"]["proxy-url"].as<std::string>());
             }
 
             this->clusters->append(clusterObj);
@@ -140,42 +166,43 @@ void KubeParser::load()
 
     if (config["contexts"])
     {
+        KubeConfigUtils kUtils(this->kubeConfig);
+
         for (const auto &context : config["contexts"])
         {
             qDebug() << "Context found:" << context["name"].as<std::string>().c_str();
             contexts.append(QString::fromStdString(context["name"].as<std::string>()));
 
-            KubeContext ctx;
-            ctx.name = QString::fromStdString(context["name"].as<std::string>().c_str());
+            KubeContext contextObj;
+            contextObj.name = QString::fromStdString(context["name"].as<std::string>().c_str());
 
-            QMap<QString, QString> ctxDetails;
-            for (YAML::const_iterator it = context.begin(); it != context.end(); ++it)
+            QString ctxUser = QString::fromStdString(context["context"]["user"].as<std::string>().c_str());
+            QString ctxCluster = QString::fromStdString(context["context"]["cluster"].as<std::string>().c_str());
+
+            KubeUser *ctxUserObj = kUtils.getUserByName(ctxUser);
+            KubeCluster *ctxClusterObj = kUtils.getClusterByName(ctxCluster);
+
+            if (!ctxUserObj)
             {
-                YAML::Node fnode = it->first;
-                YAML::Node snode = it->second;
-
-                if (snode.IsScalar())
-                {
-                    qDebug() << "\tScalar type |" << snode.as<std::string>().c_str();
-                }
-                else if (snode.IsMap())
-                {
-                    QString clusterName(snode["cluster"].as<std::string>().c_str());
-                    QString userName(snode["user"].as<std::string>().c_str());
-
-                    ctxDetails.insert(QString("cluster"), clusterName);
-                    ctxDetails.insert(QString("user"), userName);
-
-                    qDebug() << "\tMap type | Cluster:" << clusterName << " | User:" << userName;
-
-                    ctx.context = ctxDetails;
-                }
-                else
-                {
-                    qDebug() << "\tUnhandled type";
-                }
+                emit errorLoadingFile(QString("Error loading context %1, user %2 cannot be found!").arg(contextObj.name, ctxUser));
+                return;
             }
-            this->contexts->append(ctx);
+
+            if (!ctxClusterObj)
+            {
+                emit errorLoadingFile(QString("Error loading context %1, cluster %2 cannot be found!").arg(contextObj.name, ctxCluster));
+                return;
+            }
+
+            contextObj.cluster = ctxClusterObj;
+            contextObj.user = ctxUserObj;
+
+            // optional properties
+            if (context["context"]["namespace"])
+            {
+            }
+
+            this->contexts->append(contextObj);
         }
 
         this->kubeConfig->contexts = this->contexts;
