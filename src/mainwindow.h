@@ -58,6 +58,10 @@ private slots:
 
     void on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason);
 
+    void on_actionAbout_triggered();
+
+    void on_actionNew_KubeConfig_file_triggered();
+
 signals:
     void contextHasBeenSelected();
 

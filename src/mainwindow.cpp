@@ -295,3 +295,15 @@ void MainWindow::on_actionEditClusters_triggered()
 void MainWindow::on_actionEditUsers_triggered()
 {
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+
+}
+
+
+void MainWindow::on_actionNew_KubeConfig_file_triggered()
+{
+
+}
+

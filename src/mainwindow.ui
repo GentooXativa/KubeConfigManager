@@ -14,7 +14,7 @@
    <string>KubeConfigManager</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../assets.qrc">
     <normaloff>:/logo/assets/logo.png</normaloff>:/logo/assets/logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -335,7 +335,26 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuUtils">
+    <property name="title">
+     <string>Utils</string>
+    </property>
+    <addaction name="actionNew_KubeConfig_file"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditUsers"/>
+    <addaction name="actionEditClusters"/>
+    <addaction name="separator"/>
+    <addaction name="actionSwitchContext"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuSystem"/>
+   <addaction name="menuUtils"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -432,7 +451,8 @@
   </action>
   <action name="actionEditUsers">
    <property name="icon">
-    <iconset theme="contact-new"/>
+    <iconset theme="contact-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Edit users</string>
@@ -440,13 +460,35 @@
   </action>
   <action name="actionEditClusters">
    <property name="icon">
-    <iconset theme="applications-engineering"/>
+    <iconset theme="applications-engineering">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Edit clusters</string>
    </property>
   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionNew_KubeConfig_file">
+   <property name="icon">
+    <iconset theme="document-new"/>
+   </property>
+   <property name="text">
+    <string>New KubeConfig file</string>
+   </property>
+   <property name="toolTip">
+    <string>Start a config file from scratch</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../assets.qrc"/>
+ </resources>
  <connections/>
 </ui>
