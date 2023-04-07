@@ -54,6 +54,8 @@ void KubeParser::load()
             // Required properties
             clusterObj.name = QString::fromStdString(cluster["name"].as<std::string>().c_str());
             clusterObj.server = QString::fromStdString(cluster["cluster"]["server"].as<std::string>());
+            clusterObj.insecureSkipTlsVerify = false;
+            clusterObj.disableCompression = false;
 
             // Optional properties
             if (cluster["cluster"]["certificate-authority-data"])
@@ -108,34 +110,97 @@ void KubeParser::load()
                 throw;
             }
 
-            /**
-             * Legacy K8S user
-             */
             if (user["user"]["client-certificate-data"])
             {
                 userObj.clientCertificateData = QString::fromStdString(user["user"]["client-certificate-data"].as<std::string>());
             }
+
+            if (user["user"]["client-certificate"])
+            {
+                userObj.clientCertificate = QString::fromStdString(user["user"]["client-certificate"].as<std::string>());
+            }
+
             if (user["user"]["client-key-data"])
             {
                 userObj.clientKeyData = QString::fromStdString(user["user"]["client-key-data"].as<std::string>());
             }
+
+            if (user["user"]["client-key"])
+            {
+                userObj.clientKey = QString::fromStdString(user["user"]["client-key"].as<std::string>());
+            }
+
             if (user["user"]["token"])
             {
                 userObj.token = QString::fromStdString(user["user"]["token"].as<std::string>());
             }
 
+            if (user["user"]["as-uid"])
+            {
+                userObj.asUid = QString::fromStdString(user["user"]["as-uid"].as<std::string>());
+            }
+
+            if (user["user"]["as"])
+            {
+                userObj.as = QString::fromStdString(user["user"]["as"].as<std::string>());
+            }
+
+            if (user["user"]["tokenFile"])
+            {
+                userObj.tokenFile = QString::fromStdString(user["user"]["tokenFile"].as<std::string>());
+            }
+
+            if (user["user"]["username"])
+            {
+                userObj.username = QString::fromStdString(user["user"]["username"].as<std::string>());
+            }
+
+            if (user["user"]["password"])
+            {
+                userObj.password = QString::fromStdString(user["user"]["password"].as<std::string>());
+            }
+
             if (user["user"]["exec"])
             {
                 YAML::Node execData = user["user"]["exec"];
+                // required properties
                 userObj.exec.apiVersion = QString::fromStdString(execData["apiVersion"].as<std::string>());
                 userObj.exec.command = QString::fromStdString(execData["command"].as<std::string>());
-
-                qDebug() << "User auth exec plugin:" << userObj.exec.command;
-                userObj.exec.env = QString::fromStdString(execData["env"].as<std::string>());
-                userObj.exec.args = QString::fromStdString(execData["args"].as<std::string>());
                 userObj.exec.installHint = QString::fromStdString(execData["installHint"].as<std::string>());
                 userObj.exec.interactiveMode = QString::fromStdString(execData["interactiveMode"].as<std::string>());
                 userObj.exec.provideClusterInfo = QString::fromStdString(execData["provideClusterInfo"].as<std::string>());
+
+                // optional properties
+                if (execData["env"] && execData["env"].Type() != YAML::NodeType::Null)
+                {
+                    if (execData["env"].IsSequence())
+                    {
+                        QMap<QString, QString> envVars;
+                        for (YAML::const_iterator it = execData["env"].begin(); it != execData["env"].end(); ++it)
+                        {
+                            YAML::Node envVar = *it;
+                            QString envVarName = QString::fromStdString(envVar["name"].as<std::string>());
+                            QString envVarValue = QString::fromStdString(envVar["value"].as<std::string>());
+                            envVars.insert(envVarName, envVarValue);
+                        }
+
+                        userObj.exec.env = envVars;
+                    }
+                }
+
+                if (execData["args"] && execData["args"].Type() != YAML::NodeType::Null)
+                {
+                    if (execData["args"].IsSequence())
+                    {
+                        QStringList args;
+                        for (YAML::const_iterator it = execData["args"].begin(); it != execData["args"].end(); ++it)
+                        {
+                            args.append(QString::fromStdString(it->as<std::string>()));
+                        }
+
+                        userObj.exec.args = args;
+                    }
+                }
             }
 
             if (false)
@@ -200,6 +265,26 @@ void KubeParser::load()
             // optional properties
             if (context["context"]["namespace"])
             {
+                contextObj.clusterNamespace = QString::fromStdString(context["context"]["namespace"].as<std::string>().c_str());
+            }
+
+            if (context["context"]["extensions"])
+            {
+                YAML::Node extensionsNode = context["context"]["extensions"];
+                QList<KubeConfigExtension> extensions;
+                for (YAML::const_iterator it = extensionsNode.begin(); it != extensionsNode.end(); ++it)
+                {
+                    YAML::Node extensionDetailNode = *it;
+                    KubeConfigExtension extension;
+
+                    extension.name = QString::fromStdString(extensionDetailNode["name"].as<std::string>());
+                    extension.provider = QString::fromStdString(extensionDetailNode["extension"]["provider"].as<std::string>());
+                    extension.version = QString::fromStdString(extensionDetailNode["extension"]["version"].as<std::string>());
+                    extension.lastUpdate = QString::fromStdString(extensionDetailNode["extension"]["last-update"].as<std::string>());
+
+                    extensions.append(extension);
+                }
+                contextObj.extensions = extensions;
             }
 
             this->contexts->append(contextObj);

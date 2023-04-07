@@ -16,6 +16,8 @@ public:
     KubeCluster *getClusterByName(QString name);
     KubeUser *getUserByName(QString name);
 
+    QStringList getClustersStringList();
+    QStringList getContextsStringList();
 signals:
 
 private:

@@ -13,6 +13,14 @@
 #include <QVariantMap>
 #include <QDateTime>
 
+struct KubeConfigExtension
+{
+    QString name;
+    QString provider;
+    QString version;
+    QString lastUpdate;
+};
+
 struct KubeCluster
 {
     QString name;
@@ -24,7 +32,7 @@ struct KubeCluster
     QString certificateAuthorityData;
     QString proxyUrl;
     bool disableCompression;
-    QMap<QString, QString> extensions;
+    QList<KubeConfigExtension> extensions;
 
     QString caCertificate;
 };
@@ -32,9 +40,9 @@ struct KubeCluster
 struct KubeAuthExec
 {
     QString apiVersion;
-    QString args;
+    QStringList args;
     QString command;
-    QString env;
+    QMap<QString, QString> env;
     QString installHint;
     QString interactiveMode;
     QString provideClusterInfo;
@@ -52,9 +60,18 @@ struct KubeUser
     KubeAuthExec exec;
     KubeAuthProvider provider;
 
+    QString clientCertificate;
     QString clientCertificateData;
+    QString clientKey;
     QString clientKeyData;
     QString token;
+    QString tokenFile;
+    QString as;
+    QString asUid;
+    QStringList asGroups;
+    QMap<QString, QString> asUserExtra;
+    QString username;
+    QString password;
 };
 
 struct KubeContext
@@ -63,7 +80,7 @@ struct KubeContext
     KubeCluster *cluster;
     KubeUser *user;
     QString clusterNamespace;
-    QMap<QString, QString> extensions;
+    QList<KubeConfigExtension> extensions;
 };
 
 typedef QList<KubeContext> KubeContextList;

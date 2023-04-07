@@ -51,3 +51,27 @@ KubeCluster *KubeConfigUtils::getClusterByName(QString name)
 
     return NULL;
 }
+
+QStringList KubeConfigUtils::getClustersStringList()
+{
+    QStringList list;
+    for (QList<KubeCluster>::iterator it = this->kubeConfig->clusters->begin(); it != this->kubeConfig->clusters->end(); ++it)
+    {
+        KubeCluster current = *it;
+        list.append(current.name);
+    }
+
+    return list;
+}
+
+QStringList KubeConfigUtils::getContextsStringList()
+{
+    QStringList list;
+    for (QList<KubeContext>::iterator it = this->kubeConfig->contexts->begin(); it != this->kubeConfig->contexts->end(); ++it)
+    {
+        KubeContext current = *it;
+        list.append(current.name);
+    }
+
+    return list;
+}

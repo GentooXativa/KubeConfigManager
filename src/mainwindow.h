@@ -8,9 +8,12 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QIcon>
+#include <QWindow>
 
 #include "kubeconfigutils.h"
 #include "KubeConfManager.h"
+#include "clustereditor.h"
+#include "contextswitcher.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -48,6 +51,12 @@ private slots:
 
     void onContextSelected();
     void updateContextInformationText();
+
+    void on_actionEditClusters_triggered();
+
+    void on_actionEditUsers_triggered();
+
+    void on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason);
 
 signals:
     void contextHasBeenSelected();

@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     {
         ui->lineEditWorkingDirectory->setText(workingDirectory);
         this->on_actionReload_triggered();
+        this->ui->listViewFiles->selectionModel()->select(this->ui->listViewFiles->indexAt(QPoint(0, 0)), QItemSelectionModel::Select);
+        this->on_listViewFiles_activated(this->ui->listViewFiles->indexAt(QPoint(0, 0)));
     }
 
     uiHasBeenInitialized = true;
@@ -164,6 +166,9 @@ void MainWindow::clearView()
 
     contextsModel->setStringList(QStringList());
 
+    this->ui->actionEditClusters->setEnabled(false);
+    this->ui->actionEditUsers->setEnabled(false);
+
     ui->textEditContextInformation->setMarkdown(
         QString("# Welcome to %1 v%2\n\n---\n* This section is a work in progress...\n\n\n ![Test](https://www.one-beyond.com/wpcms/wp-content/themes/dcsl/assets/images/logo-animated.gif)")
             .arg(APP_NAME, APP_VERSION));
@@ -186,11 +191,52 @@ void MainWindow::createTrayIcon()
     systemTrayIcon = new QSystemTrayIcon(*appIcon, this);
     systemTrayIcon->setVisible(true);
     systemTrayIcon->setContextMenu(systemTrayMenu);
+
+    connect(systemTrayIcon, &QSystemTrayIcon::activated, this, &MainWindow::on_systemTray_clicked);
+}
+
+void MainWindow::on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason)
+    {
+    case QSystemTrayIcon::DoubleClick:
+        qDebug() << "SystemTray - Double click";
+        break;
+
+    case QSystemTrayIcon::Context:
+        qDebug() << "SystemTray - Context requested";
+        break;
+
+    case QSystemTrayIcon::Trigger:
+        qDebug() << "SystemTray - Trigger";
+
+        if (this->isHidden())
+        {
+            this->show();
+            this->raise();
+        }
+        else
+        {
+            this->hide();
+        }
+
+        break;
+
+    case QSystemTrayIcon::MiddleClick:
+        qDebug() << "SystemTray - Middle click";
+        break;
+
+    case QSystemTrayIcon::Unknown:
+        qDebug() << "SystemTray - Unknown activation reason";
+        break;
+    }
 }
 
 void MainWindow::on_actionSwitchContext_triggered()
 {
-    QDialog mine(this);
+    ContextSwitcher *switcher = new ContextSwitcher(this->kubeConfig, this->systemTrayIcon);
+    switcher->setWindowFlags(Qt::Tool | Qt::Dialog);
+    switcher->show();
 }
 
 void MainWindow::reloadDefaultConfiguration()
@@ -221,6 +267,9 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 
     KubeContext *test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
     qDebug() << "\tSelected context:" << test->name;
+
+    this->ui->actionEditClusters->setEnabled(true);
+    this->ui->actionEditUsers->setEnabled(true);
 }
 
 void MainWindow::onContextSelected()
@@ -234,4 +283,15 @@ void MainWindow::updateContextInformationText()
     QString text(QString("Cluster %1\n    User: %2\n").arg(this->selectedContext.name, this->selectedContext.name));
     ui->textEditContextInformation->setMarkdown(text);
     ui->lineEditContextName->setText(this->selectedContext.name);
+}
+
+void MainWindow::on_actionEditClusters_triggered()
+{
+    ClusterEditor *editorWidget = new ClusterEditor(this->kubeConfig, this);
+    editorWidget->setWindowFlags(Qt::Tool | Qt::Dialog);
+    editorWidget->show();
+}
+
+void MainWindow::on_actionEditUsers_triggered()
+{
 }

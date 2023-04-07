@@ -14,7 +14,7 @@
    <string>KubeConfigManager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../assets.qrc">
+   <iconset>
     <normaloff>:/logo/assets/logo.png</normaloff>:/logo/assets/logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -256,7 +256,8 @@
               <string>Clear</string>
              </property>
              <property name="icon">
-              <iconset theme="document-revert"/>
+              <iconset theme="document-revert">
+               <normaloff>.</normaloff>.</iconset>
              </property>
             </widget>
            </item>
@@ -282,7 +283,8 @@
               <string>Save</string>
              </property>
              <property name="icon">
-              <iconset theme="document-save"/>
+              <iconset theme="document-save">
+               <normaloff>.</normaloff>.</iconset>
              </property>
             </widget>
            </item>
@@ -347,6 +349,10 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionReload"/>
+   <addaction name="separator"/>
+   <addaction name="actionEditUsers"/>
+   <addaction name="actionEditClusters"/>
+   <addaction name="separator"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionQuit"/>
@@ -424,9 +430,23 @@
     <string>Ctrl+K</string>
    </property>
   </action>
+  <action name="actionEditUsers">
+   <property name="icon">
+    <iconset theme="contact-new"/>
+   </property>
+   <property name="text">
+    <string>Edit users</string>
+   </property>
+  </action>
+  <action name="actionEditClusters">
+   <property name="icon">
+    <iconset theme="applications-engineering"/>
+   </property>
+   <property name="text">
+    <string>Edit clusters</string>
+   </property>
+  </action>
  </widget>
- <resources>
-  <include location="../assets.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

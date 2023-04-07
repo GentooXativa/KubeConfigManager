@@ -28,10 +28,16 @@ set(PROJECT_SOURCES
         src/switchcontextform.cpp
         src/switchcontextform.h
         src/switchcontextform.ui
+        src/clustereditor.cpp
+        src/clustereditor.h
+        src/clustereditor.ui
         src/kubeparser.cpp
         src/kubeparser.h
         src/kubeconfigutils.cpp
         src/kubeconfigutils.h
+        src/contextswitcher.h
+        src/contextswitcher.cpp
+        src/contextswitcher.ui
         assets.qrc
         ${TS_FILES}
 )
