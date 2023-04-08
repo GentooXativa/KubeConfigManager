@@ -13,16 +13,29 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    qApp->installEventFilter(this);
     uiHasBeenInitialized = false;
+
+    qApp->installEventFilter(this);
     appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
-    this->showFilesPanel = true;
     ui->setupUi(this);
+
+    this->initializeApp();
+
+    uiHasBeenInitialized = true;
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::initializeApp()
+{
+    this->showFilesPanel = true;
 
     contextsModel = new QStringListModel(this);
     ui->listViewContexts->setModel(contextsModel);
 
-    this->loadSettings();
     this->clearView();
 
     if (!workingDirectory.isEmpty())
@@ -33,15 +46,11 @@ MainWindow::MainWindow(QWidget *parent)
         this->on_listViewFiles_activated(this->ui->listViewFiles->indexAt(QPoint(0, 0)));
     }
 
-    uiHasBeenInitialized = true;
+    this->on_actionToggleFilesPanel_toggled(this->showFilesPanel);
+    this->ui->actionToggleFilesPanel->setChecked(this->showFilesPanel);
     this->createTrayIcon();
 
     connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -94,6 +103,13 @@ void MainWindow::loadSettings()
 {
     QStringList keys = appSettings->allKeys();
     qDebug() << "Keys found in config:" << keys.length();
+
+    if (keys.length() == 0)
+    {
+        QMessageBox::information(this, tr("Configuration not found"), tr("Looks like this is the first time you use this application, please check this settings and have fun!"));
+        this->on_actionSettings_triggered();
+        return;
+    }
 
     if (appSettings->contains("paths/working_directory"))
     {
@@ -325,4 +341,16 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
     return QObject::eventFilter(obj, event);
+}
+
+void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
+{
+    if (showPanel)
+    {
+        this->ui->dockWidgetConfigurationFiles->show();
+    }
+    else
+    {
+        this->ui->dockWidgetConfigurationFiles->hide();
+    }
 }

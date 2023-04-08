@@ -49,6 +49,7 @@ private slots:
     void on_actionSettings_triggered();
     void loadSettings();
     void clearView();
+    void initializeApp();
     void reloadDefaultConfiguration();
 
     void on_actionSwitchContext_triggered();
@@ -66,6 +67,8 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionNew_KubeConfig_file_triggered();
+
+    void on_actionToggleFilesPanel_toggled(bool arg1);
 
 signals:
     void contextHasBeenSelected();

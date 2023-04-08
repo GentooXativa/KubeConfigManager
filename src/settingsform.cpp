@@ -1,3 +1,4 @@
+#include <QDir>
 #include "settingsform.h"
 #include "ui_settingsform.h"
 
@@ -50,6 +51,20 @@ void SettingsForm::updateUI()
         {
             ui->lineEditDisabledFolderPath->setText(QString("%1/disabled.conf.d").arg(appSettings->value("paths/working_directory").toString()));
         }
+    }
+    else
+    {
+        QString initialDirectory = QDir::homePath();
+        initialDirectory.append("/.kube");
+
+        QDir kubedir = QDir(initialDirectory);
+
+        if (!kubedir.exists())
+        {
+            initialDirectory = QDir::homePath();
+        }
+
+        ui->lineEditWorkingDirectory->setText(initialDirectory);
     }
 
     if (appSettings->contains("paths/disabled_directory"))
