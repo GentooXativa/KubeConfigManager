@@ -1,5 +1,7 @@
 #include <QStringListModel>
 #include <QDebug>
+#include <QProcess>
+#include <QProcessEnvironment>
 
 #include "contextswitcher.h"
 #include "ui_contextswitcher.h"
@@ -29,7 +31,27 @@ ContextSwitcher::~ContextSwitcher()
 
 void ContextSwitcher::on_listView_activated(const QModelIndex &index)
 {
+    QProcess kubectl;
+    QStringList arguments;
+
+    arguments << "config"
+              << "use-context" << index.data().toString();
+
+    qDebug() << "kubectl" << arguments;
+
+    kubectl.start("kubectl", arguments, QIODevice::ReadOnly);
+
+    if (!kubectl.waitForFinished())
+        return;
+
+    QByteArray result = kubectl.readAll();
+
     qDebug() << "New context selected";
-    this->trayIcon->showMessage(tr("New context selected"), QString(tr("%1 has been selected as active context.")).arg(true), QSystemTrayIcon::Information);
+    this->trayIcon->showMessage(tr("New context selected"), QString(tr("%1 has been selected as active context.")).arg(index.data().toString()), QSystemTrayIcon::Information);
+    this->close();
+}
+
+void ContextSwitcher::closeWindow()
+{
     this->close();
 }

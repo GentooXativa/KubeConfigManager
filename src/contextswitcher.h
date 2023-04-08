@@ -20,6 +20,9 @@ public:
     explicit ContextSwitcher(KubeConfig *config, QSystemTrayIcon *trayIcon, QWidget *parent = nullptr);
     ~ContextSwitcher();
 
+public slots:
+    void closeWindow();
+
 private slots:
     void on_listView_activated(const QModelIndex &index);
 

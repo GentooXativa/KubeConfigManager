@@ -9,6 +9,8 @@
 #include <QSystemTrayIcon>
 #include <QIcon>
 #include <QWindow>
+#include <QEvent>
+#include <QKeyEvent>
 
 #include "kubeconfigutils.h"
 #include "KubeConfManager.h"
@@ -29,6 +31,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     void on_actionQuit_triggered();
@@ -64,6 +69,7 @@ private slots:
 
 signals:
     void contextHasBeenSelected();
+    void closeContextSwitcher();
 
 private:
     void setWorkingDirectory(QString, bool);
@@ -84,5 +90,7 @@ private:
     KubeContext selectedContext;
     KubeConfig *kubeConfig;
     KubeConfigUtils *kubeUtils;
+
+    bool showFilesPanel;
 };
 #endif // MAINWINDOW_H

@@ -13,9 +13,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    qApp->installEventFilter(this);
     uiHasBeenInitialized = false;
     appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
-
+    this->showFilesPanel = true;
     ui->setupUi(this);
 
     contextsModel = new QStringListModel(this);
@@ -224,6 +225,7 @@ void MainWindow::on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason)
 
     case QSystemTrayIcon::MiddleClick:
         qDebug() << "SystemTray - Middle click";
+        this->on_actionSwitchContext_triggered();
         break;
 
     case QSystemTrayIcon::Unknown:
@@ -237,6 +239,8 @@ void MainWindow::on_actionSwitchContext_triggered()
     ContextSwitcher *switcher = new ContextSwitcher(this->kubeConfig, this->systemTrayIcon);
     switcher->setWindowFlags(Qt::Tool | Qt::Dialog);
     switcher->show();
+
+    connect(this, &MainWindow::closeContextSwitcher, switcher, &ContextSwitcher::closeWindow);
 }
 
 void MainWindow::reloadDefaultConfiguration()
@@ -298,12 +302,27 @@ void MainWindow::on_actionEditUsers_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-
 }
-
 
 void MainWindow::on_actionNew_KubeConfig_file_triggered()
 {
-
 }
 
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (keyEvent->key() == Qt::Key_Escape)
+        {
+            // handle escape to close context switch window
+            if (obj->objectName() == "ContextSwitcherWindow")
+            {
+                emit closeContextSwitcher();
+            }
+        }
+        // qDebug() << "key " << keyEvent->key() << "from" << obj;
+    }
+
+    return QObject::eventFilter(obj, event);
+}

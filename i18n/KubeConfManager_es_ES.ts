@@ -103,12 +103,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contextswitcher.cpp" line="33"/>
+        <location filename="../src/contextswitcher.cpp" line="50"/>
         <source>New context selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contextswitcher.cpp" line="33"/>
+        <location filename="../src/contextswitcher.cpp" line="50"/>
         <source>%1 has been selected as active context.</source>
         <translation type="unfinished"></translation>
     </message>
