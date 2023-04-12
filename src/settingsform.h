@@ -29,6 +29,8 @@ private slots:
 
     void on_toolButtonDisabledFolderPath_triggered(QAction *arg1);
 
+    void on_pushButtonKubeCtlCheck_clicked();
+
 private:
     void updateUI();
     Ui::SettingsForm *ui;

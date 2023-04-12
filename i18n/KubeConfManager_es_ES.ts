@@ -357,6 +357,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/settingsform.ui" line="126"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="261"/>
+        <source>Backup configuration before save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/settingsform.ui" line="138"/>
         <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="262"/>
         <source>Backup Directory</source>
@@ -384,12 +390,6 @@
         <location filename="../src/settingsform.ui" line="201"/>
         <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="267"/>
         <source>Show file panel on start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/settingsform.ui" line="126"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="261"/>
-        <source>Backup configuration before save</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

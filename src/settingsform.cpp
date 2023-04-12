@@ -1,4 +1,6 @@
 #include <QDir>
+#include <QDebug>
+#include <QProcessEnvironment>
 #include "settingsform.h"
 #include "ui_settingsform.h"
 
@@ -71,4 +73,10 @@ void SettingsForm::updateUI()
     {
         ui->lineEditDisabledFolderPath->setText(appSettings->value("paths/disabled_directory").toString());
     }
+}
+
+void SettingsForm::on_pushButtonKubeCtlCheck_clicked()
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    qDebug() << "PATH:" << env.value("PATH");
 }

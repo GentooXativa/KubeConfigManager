@@ -11,35 +11,35 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Core LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core LinguistTools REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Core LinguistTools DBus REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core LinguistTools DBus REQUIRED)
 
 set(TS_FILES i18n/KubeConfManager_es_ES.ts)
 
 set(PROJECT_SOURCES
-        src/main.cpp
-        src/KubeConfManager.h
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
-        src/settingsform.cpp
-        src/settingsform.h
-        src/settingsform.ui
-        src/switchcontextform.cpp
-        src/switchcontextform.h
-        src/switchcontextform.ui
-        src/clustereditor.cpp
-        src/clustereditor.h
-        src/clustereditor.ui
-        src/kubeparser.cpp
-        src/kubeparser.h
-        src/kubeconfigutils.cpp
-        src/kubeconfigutils.h
-        src/contextswitcher.h
-        src/contextswitcher.cpp
-        src/contextswitcher.ui
-        assets.qrc
-        ${TS_FILES}
+    src/main.cpp
+    src/KubeConfManager.h
+    src/mainwindow.cpp
+    src/mainwindow.h
+    src/mainwindow.ui
+    src/settingsform.cpp
+    src/settingsform.h
+    src/settingsform.ui
+    src/switchcontextform.cpp
+    src/switchcontextform.h
+    src/switchcontextform.ui
+    src/clustereditor.cpp
+    src/clustereditor.h
+    src/clustereditor.ui
+    src/kubeparser.cpp
+    src/kubeparser.h
+    src/kubeconfigutils.cpp
+    src/kubeconfigutils.h
+    src/contextswitcher.h
+    src/contextswitcher.cpp
+    src/contextswitcher.ui
+    assets.qrc
+    ${TS_FILES}
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -47,19 +47,20 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET KubeConfManager APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 
+    # Define target properties for Android with Qt 6 as:
+    # set_property(TARGET KubeConfManager APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+    # ${CMAKE_CURRENT_SOURCE_DIR}/android)
+    # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()
     if(ANDROID)
         add_library(KubeConfManager SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+
+    # Define properties for Android with Qt 5 after find_package() calls as:
+    # set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(KubeConfManager
             ${PROJECT_SOURCES}
@@ -69,7 +70,7 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(KubeConfManager PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core yaml-cpp)
+target_link_libraries(KubeConfManager PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus yaml-cpp)
 
 set_target_properties(KubeConfManager PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
