@@ -70,6 +70,8 @@ private slots:
 
     void on_actionToggleFilesPanel_toggled(bool arg1);
 
+    void on_listViewContexts_doubleClicked(const QModelIndex &index);
+
 signals:
     void contextHasBeenSelected();
     void closeContextSwitcher();

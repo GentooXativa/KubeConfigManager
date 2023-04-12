@@ -1,6 +1,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QProcessEnvironment>
+#include <QMessageBox>
 #include "settingsform.h"
 #include "ui_settingsform.h"
 
@@ -19,8 +20,15 @@ SettingsForm::~SettingsForm()
 
 void SettingsForm::on_buttonBox_accepted()
 {
+    if(ui->lineEditWorkingDirectory->text().isEmpty()){
+        QMessageBox::critical(this, tr("Please, configure this application"), tr("You need to provide at least a working directory to continue, this directory will hold all the configuration files."));
+        return;
+    }
     appSettings->setValue("paths/working_directory", ui->lineEditWorkingDirectory->text());
     appSettings->setValue("backup/configuration", ui->checkBoxBackupConfig->isChecked());
+    appSettings->setValue("ui/start_minimized", ui->checkBoxStartMinimized->isChecked());
+    appSettings->setValue("ui/start_hidden", ui->checkBoxStartHidden->isChecked());
+    appSettings->setValue("ui/show_filepanel", ui->checkBoxShowFilePanel->isChecked());
 
     if (!ui->lineEditDisabledFolderPath->text().isEmpty())
     {
@@ -33,6 +41,9 @@ void SettingsForm::on_buttonBox_accepted()
 
 void SettingsForm::on_buttonBox_rejected()
 {
+    if(appSettings->allKeys().length() == 0 ){
+        QMessageBox::critical(this, tr("Please, configure this application"), tr("You need to provide at least a working directory to continue, this directory will hold all the configuration files."));
+    }
     this->close();
 }
 
@@ -63,7 +74,8 @@ void SettingsForm::updateUI()
 
         if (!kubedir.exists())
         {
-            initialDirectory = QDir::homePath();
+            QMessageBox::warning(this, tr("Default directory not found"), tr("Default directory for kubectl not found, please provide a working directory."));
+            return;
         }
 
         ui->lineEditWorkingDirectory->setText(initialDirectory);
@@ -78,5 +90,32 @@ void SettingsForm::updateUI()
 void SettingsForm::on_pushButtonKubeCtlCheck_clicked()
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    qDebug() << "PATH:" << env.value("PATH");
+    QString pathString = env.value("PATH");
+    QStringList paths = pathString.split(":");
+
+    for( QStringList::iterator it = paths.begin(); it != paths.end(); it++ ){
+        QString path = *it;
+        QString filepath(QString("%1/kubectl").arg(path));
+        QFile executable(filepath);
+        if(executable.exists()){
+            QProcess testRun;
+            testRun.setProgram(filepath);
+            QStringList args;
+            args << "version";
+            testRun.setArguments(args);
+            qDebug() << "FIle found, trying to execute:" << filepath;
+
+            testRun.start();
+
+            if( !testRun.waitForFinished()){
+                qDebug() << "kubectl failed:" << testRun.errorString();
+                // @todo show a error message about permissions
+            }else
+            {
+                qDebug() << "Success: " << testRun.readAll();
+                ui->lineEditKubeCtlPath->setText(filepath);
+            }
+        }
+    }
+
 }

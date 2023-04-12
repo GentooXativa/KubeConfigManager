@@ -9,6 +9,7 @@
 
 #include "kubeparser.h"
 #include "settingsform.h"
+#include "contexteditor.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -266,17 +267,17 @@ void MainWindow::reloadDefaultConfiguration()
 void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
     qDebug() << "Context activated:" << index.data().toString();
-    qDebug() << "Contexts loaded:" << this->contexts->size();
-    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
-    {
-        KubeContext current = *i;
-        if (current.name == index.data().toString())
-        {
-            this->selectedContext = current;
-            emit contextHasBeenSelected();
-            return;
-        }
-    }
+//    qDebug() << "Contexts loaded:" << this->contexts->size();
+//    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
+//    {
+//        KubeContext current = *i;
+//        if (current.name == index.data().toString())
+//        {
+//            this->selectedContext = current;
+//            emit contextHasBeenSelected();
+//            return;
+//        }
+//    }
 }
 
 void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
@@ -290,6 +291,9 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 
     this->ui->actionEditClusters->setEnabled(true);
     this->ui->actionEditUsers->setEnabled(true);
+
+    QStringList contextModel = this->kubeUtils->getContextsStringList();
+    this->contextModelUpdated(contextModel);
 }
 
 void MainWindow::onContextSelected()
@@ -322,6 +326,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionNew_KubeConfig_file_triggered()
 {
+
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -354,3 +359,12 @@ void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
         this->ui->dockWidgetConfigurationFiles->hide();
     }
 }
+
+void MainWindow::on_listViewContexts_doubleClicked(const QModelIndex &index)
+{
+        ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
+    editor->setWindowFlags(Qt::Tool | Qt::Dialog);
+
+    editor->show();
+}
+

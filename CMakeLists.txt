@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Core LinguistTools DBus REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core LinguistTools DBus REQUIRED)
 
+add_subdirectory(lib/yaml-cpp)
+
 set(TS_FILES i18n/KubeConfManager_es_ES.ts)
 
 set(PROJECT_SOURCES
@@ -38,6 +40,9 @@ set(PROJECT_SOURCES
     src/contextswitcher.h
     src/contextswitcher.cpp
     src/contextswitcher.ui
+    src/contexteditor.h
+    src/contexteditor.cpp
+    src/contexteditor.ui
     assets.qrc
     ${TS_FILES}
 )

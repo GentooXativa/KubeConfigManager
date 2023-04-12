@@ -136,7 +136,11 @@
        </layout>
       </item>
       <item row="1" column="0">
-       <widget class="QListView" name="listViewContexts"/>
+       <widget class="QListView" name="listViewContexts">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -323,7 +327,7 @@
      <x>0</x>
      <y>0</y>
      <width>1186</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSystem">
