@@ -6,7 +6,7 @@
     <message>
         <location filename="../src/clustereditor.ui" line="14"/>
         <location filename="../build/KubeConfManager_autogen/include/ui_clustereditor.h" line="325"/>
-        <source>Form</source>
+        <source>Cluster Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -95,6 +95,51 @@
     </message>
 </context>
 <context>
+    <name>ContextEditor</name>
+    <message>
+        <location filename="../src/contexteditor.ui" line="14"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="164"/>
+        <source>Context Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="24"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="165"/>
+        <source>Context name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="44"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="166"/>
+        <source>Cluster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="64"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="167"/>
+        <source>User</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="78"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="168"/>
+        <source>Namespace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="120"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="169"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contexteditor.ui" line="130"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="170"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ContextSwitcher</name>
     <message>
         <location filename="../src/contextswitcher.ui" line="38"/>
@@ -103,12 +148,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contextswitcher.cpp" line="50"/>
+        <location filename="../src/contextswitcher.cpp" line="52"/>
         <source>New context selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contextswitcher.cpp" line="50"/>
+        <location filename="../src/contextswitcher.cpp" line="52"/>
         <source>%1 has been selected as active context.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,191 +162,191 @@
     <name>MainWindow</name>
     <message>
         <location filename="../src/mainwindow.ui" line="14"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="458"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="459"/>
         <source>KubeConfigManager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="51"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="489"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="490"/>
         <source>Working Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="119"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="491"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="492"/>
         <source>Contexts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="149"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="492"/>
+        <location filename="../src/mainwindow.ui" line="153"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="493"/>
         <source>Selected context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="165"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="493"/>
+        <location filename="../src/mainwindow.ui" line="169"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="494"/>
         <source>Context name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="185"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="494"/>
+        <location filename="../src/mainwindow.ui" line="189"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="495"/>
         <source>Cluster:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="209"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="495"/>
+        <location filename="../src/mainwindow.ui" line="213"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="496"/>
         <source>User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="256"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="496"/>
+        <location filename="../src/mainwindow.ui" line="260"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="497"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="283"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="497"/>
+        <location filename="../src/mainwindow.ui" line="287"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="498"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="331"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="498"/>
+        <location filename="../src/mainwindow.ui" line="335"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="499"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="340"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="499"/>
+        <location filename="../src/mainwindow.ui" line="344"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="500"/>
         <source>Utils</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="351"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="500"/>
+        <location filename="../src/mainwindow.ui" line="355"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="501"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="362"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="501"/>
+        <location filename="../src/mainwindow.ui" line="366"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="502"/>
         <source>toolBar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="388"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="502"/>
+        <location filename="../src/mainwindow.ui" line="392"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="503"/>
         <source>Configuration Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="411"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="459"/>
+        <location filename="../src/mainwindow.ui" line="415"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="460"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="414"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="461"/>
+        <location filename="../src/mainwindow.ui" line="418"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="462"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="423"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="463"/>
+        <location filename="../src/mainwindow.ui" line="427"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="464"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="426"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="465"/>
+        <location filename="../src/mainwindow.ui" line="430"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="466"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="435"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="467"/>
+        <location filename="../src/mainwindow.ui" line="439"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="468"/>
         <source>Reload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="444"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="468"/>
+        <location filename="../src/mainwindow.ui" line="448"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="469"/>
         <source>Switch context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="447"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="470"/>
+        <location filename="../src/mainwindow.ui" line="451"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="471"/>
         <source>Switch to another context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="450"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="473"/>
+        <location filename="../src/mainwindow.ui" line="454"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="474"/>
         <source>Ctrl+K</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="459"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="475"/>
+        <location filename="../src/mainwindow.ui" line="463"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="476"/>
         <source>Edit users</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="468"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="476"/>
+        <location filename="../src/mainwindow.ui" line="472"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="477"/>
         <source>Edit clusters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="473"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="477"/>
+        <location filename="../src/mainwindow.ui" line="477"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="478"/>
         <source>About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="482"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="478"/>
+        <location filename="../src/mainwindow.ui" line="486"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="479"/>
         <source>New KubeConfig file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="485"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="480"/>
+        <location filename="../src/mainwindow.ui" line="489"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="481"/>
         <source>Start a config file from scratch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="488"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="483"/>
+        <location filename="../src/mainwindow.ui" line="492"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="484"/>
         <source>Ctrl+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="503"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="485"/>
+        <location filename="../src/mainwindow.ui" line="507"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="486"/>
         <source>Toggle files Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="506"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="487"/>
+        <location filename="../src/mainwindow.ui" line="510"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_mainwindow.h" line="488"/>
         <source>Ctrl+F</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="109"/>
+        <location filename="../src/mainwindow.cpp" line="126"/>
         <source>Configuration not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="109"/>
+        <location filename="../src/mainwindow.cpp" line="126"/>
         <source>Looks like this is the first time you use this application, please check this settings and have fun!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,6 +435,28 @@
         <location filename="../src/settingsform.ui" line="201"/>
         <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="267"/>
         <source>Show file panel on start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.cpp" line="25"/>
+        <location filename="../src/settingsform.cpp" line="47"/>
+        <source>Please, configure this application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.cpp" line="25"/>
+        <location filename="../src/settingsform.cpp" line="47"/>
+        <source>You need to provide at least a working directory to continue, this directory will hold all the configuration files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.cpp" line="79"/>
+        <source>Default directory not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.cpp" line="79"/>
+        <source>Default directory for kubectl not found, please provide a working directory.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

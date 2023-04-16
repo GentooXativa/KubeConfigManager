@@ -20,7 +20,8 @@ SettingsForm::~SettingsForm()
 
 void SettingsForm::on_buttonBox_accepted()
 {
-    if(ui->lineEditWorkingDirectory->text().isEmpty()){
+    if (ui->lineEditWorkingDirectory->text().isEmpty())
+    {
         QMessageBox::critical(this, tr("Please, configure this application"), tr("You need to provide at least a working directory to continue, this directory will hold all the configuration files."));
         return;
     }
@@ -41,7 +42,8 @@ void SettingsForm::on_buttonBox_accepted()
 
 void SettingsForm::on_buttonBox_rejected()
 {
-    if(appSettings->allKeys().length() == 0 ){
+    if (appSettings->allKeys().length() == 0)
+    {
         QMessageBox::critical(this, tr("Please, configure this application"), tr("You need to provide at least a working directory to continue, this directory will hold all the configuration files."));
     }
     this->close();
@@ -85,6 +87,12 @@ void SettingsForm::updateUI()
     {
         ui->lineEditDisabledFolderPath->setText(appSettings->value("paths/disabled_directory").toString());
     }
+
+    if (appSettings->contains("ui/start_minimized"))
+        ui->checkBoxStartMinimized->setChecked(appSettings->value("ui/start_minimized").toBool());
+
+    if (appSettings->contains("ui/start_hidden"))
+        ui->checkBoxStartHidden->setChecked(appSettings->value("ui/start_hidden").toBool());
 }
 
 void SettingsForm::on_pushButtonKubeCtlCheck_clicked()
@@ -93,11 +101,13 @@ void SettingsForm::on_pushButtonKubeCtlCheck_clicked()
     QString pathString = env.value("PATH");
     QStringList paths = pathString.split(":");
 
-    for( QStringList::iterator it = paths.begin(); it != paths.end(); it++ ){
+    for (QStringList::iterator it = paths.begin(); it != paths.end(); it++)
+    {
         QString path = *it;
         QString filepath(QString("%1/kubectl").arg(path));
         QFile executable(filepath);
-        if(executable.exists()){
+        if (executable.exists())
+        {
             QProcess testRun;
             testRun.setProgram(filepath);
             QStringList args;
@@ -107,15 +117,28 @@ void SettingsForm::on_pushButtonKubeCtlCheck_clicked()
 
             testRun.start();
 
-            if( !testRun.waitForFinished()){
+            if (!testRun.waitForFinished())
+            {
                 qDebug() << "kubectl failed:" << testRun.errorString();
                 // @todo show a error message about permissions
-            }else
+            }
+            else
             {
                 qDebug() << "Success: " << testRun.readAll();
                 ui->lineEditKubeCtlPath->setText(filepath);
             }
         }
     }
+}
 
+void SettingsForm::on_checkBoxStartHidden_toggled(bool checked)
+{
+    if (checked)
+        this->ui->checkBoxStartMinimized->setChecked(!checked);
+}
+
+void SettingsForm::on_checkBoxStartMinimized_toggled(bool checked)
+{
+    if (checked)
+        this->ui->checkBoxStartHidden->setChecked(!checked);
 }

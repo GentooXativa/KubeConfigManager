@@ -6,8 +6,9 @@
 #include "kubeconfigutils.h"
 #include <QStringListModel>
 
-namespace Ui {
-class ContextEditor;
+namespace Ui
+{
+    class ContextEditor;
 }
 
 class ContextEditor : public QWidget
@@ -15,7 +16,7 @@ class ContextEditor : public QWidget
     Q_OBJECT
 
 public:
-    explicit ContextEditor( KubeContext *context, KubeConfig *kConfig, QWidget *parent = nullptr);
+    explicit ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget *parent = nullptr);
     ~ContextEditor();
 
 private:

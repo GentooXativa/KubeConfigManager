@@ -17,6 +17,8 @@ public:
     bool save();
 
     KubeConfig *getKubeConfig();
+
+    static QString dumpConfig(KubeConfig *config);
 signals:
     void errorLoadingFile(QString message);
     void clustersLoaded(QStringList clusters);

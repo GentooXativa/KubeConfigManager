@@ -18,7 +18,7 @@ public:
 
     QStringList getClustersStringList();
     QStringList getContextsStringList();
-signals:
+    QStringList getUsersStringList();
 
 private:
     KubeConfig *kubeConfig;

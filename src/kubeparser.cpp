@@ -305,3 +305,68 @@ KubeConfig *KubeParser::getKubeConfig()
 {
     return this->kubeConfig;
 }
+
+QString KubeParser::dumpConfig(KubeConfig *config)
+{
+    YAML::Emitter emitter;
+
+    emitter << YAML::BeginMap;
+    // common fields
+    emitter << YAML::Key << "apiVersion" << YAML::Value << "v1";
+    emitter << YAML::Key << "kind" << YAML::Value << "Config";
+
+    // start of clusters sequence
+    emitter << YAML::Key << "clusters";
+    emitter << YAML::BeginSeq;
+    for (QList<KubeCluster>::iterator it = config->clusters->begin(); it != config->clusters->end(); ++it)
+    {
+        KubeCluster currentCluster = *it;
+        emitter << YAML::BeginMap;
+        // required fields
+        emitter << YAML::Key << "name" << YAML::Value << currentCluster.name.toStdString();
+        emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
+
+        // optional fields
+        emitter << YAML::EndMap;
+    }
+    emitter << YAML::EndSeq;
+    // end of clusters sequence
+
+    // start of users sequence
+    emitter << YAML::Key << "users";
+    emitter << YAML::BeginSeq;
+    for (QList<KubeUser>::iterator it = config->users->begin(); it != config->users->end(); ++it)
+    {
+        KubeUser currentuser = *it;
+        emitter << YAML::BeginMap;
+        // required fields
+        emitter << YAML::Key << "name" << YAML::Value << currentuser.name.toStdString();
+
+        // optional fields
+        emitter << YAML::EndMap;
+    }
+    emitter << YAML::EndSeq;
+    // end of users sequence
+
+    // start of contexts sequence
+    emitter << YAML::Key << "contexts";
+    emitter << YAML::BeginSeq;
+    for (QList<KubeContext>::iterator it = config->contexts->begin(); it != config->contexts->end(); ++it)
+    {
+        KubeContext currentcontext = *it;
+        emitter << YAML::BeginMap;
+        // required fields
+        emitter << YAML::Key << "name" << YAML::Value << currentcontext.name.toStdString();
+        emitter << YAML::Key << "user" << YAML::Value << currentcontext.user->name.toStdString();
+        emitter << YAML::Key << "cluster" << YAML::Value << currentcontext.cluster->name.toStdString();
+
+        // optional fields
+        emitter << YAML::EndMap;
+    }
+    emitter << YAML::EndSeq;
+    // end of contexts sequence
+
+    emitter << YAML::EndMap;
+
+    return QString::fromStdString(emitter.c_str());
+}

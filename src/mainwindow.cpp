@@ -51,12 +51,28 @@ void MainWindow::initializeApp()
     this->ui->actionToggleFilesPanel->setChecked(this->showFilesPanel);
     this->createTrayIcon();
 
+    if (appSettings->value("ui/start_minimized").toBool())
+    {
+        qDebug() << "Starting minimized";
+        this->showMinimized();
+    }
+
+    if (!appSettings->value("ui/start_hidden").toBool())
+    {
+        this->show();
+    }
+    else
+    {
+        this->hide();
+    }
+
     connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
 }
 
 void MainWindow::on_actionQuit_triggered()
 {
     this->close();
+    qApp->quit();
 }
 
 void MainWindow::on_toolButtonWorkingDirectory_clicked()
@@ -267,17 +283,17 @@ void MainWindow::reloadDefaultConfiguration()
 void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
     qDebug() << "Context activated:" << index.data().toString();
-//    qDebug() << "Contexts loaded:" << this->contexts->size();
-//    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
-//    {
-//        KubeContext current = *i;
-//        if (current.name == index.data().toString())
-//        {
-//            this->selectedContext = current;
-//            emit contextHasBeenSelected();
-//            return;
-//        }
-//    }
+    //    qDebug() << "Contexts loaded:" << this->contexts->size();
+    //    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
+    //    {
+    //        KubeContext current = *i;
+    //        if (current.name == index.data().toString())
+    //        {
+    //            this->selectedContext = current;
+    //            emit contextHasBeenSelected();
+    //            return;
+    //        }
+    //    }
 }
 
 void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
@@ -294,6 +310,14 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 
     QStringList contextModel = this->kubeUtils->getContextsStringList();
     this->contextModelUpdated(contextModel);
+
+    QString test2(KubeParser::dumpConfig(this->kubeConfig));
+    QFile file("/tmp/current-kubeconfig-tmp.yaml");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out << test2;
 }
 
 void MainWindow::onContextSelected()
@@ -326,7 +350,6 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionNew_KubeConfig_file_triggered()
 {
-
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -362,9 +385,7 @@ void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
 
 void MainWindow::on_listViewContexts_doubleClicked(const QModelIndex &index)
 {
-        ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
+    ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
     editor->setWindowFlags(Qt::Tool | Qt::Dialog);
-
     editor->show();
 }
-
