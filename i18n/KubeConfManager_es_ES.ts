@@ -98,43 +98,43 @@
     <name>ContextEditor</name>
     <message>
         <location filename="../src/contexteditor.ui" line="14"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="164"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="176"/>
         <source>Context Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="24"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="165"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="177"/>
         <source>Context name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="44"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="166"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="178"/>
         <source>Cluster</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="64"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="167"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="179"/>
         <source>User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="78"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="168"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="180"/>
         <source>Namespace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="120"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="169"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="181"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contexteditor.ui" line="130"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="170"/>
+        <location filename="../src/contexteditor.ui" line="131"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="182"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2,9 +2,10 @@
 #define CONTEXTEDITOR_H
 
 #include <QWidget>
+#include <QStringListModel>
+
 #include "KubeConfManager.h"
 #include "kubeconfigutils.h"
-#include <QStringListModel>
 
 namespace Ui
 {
@@ -18,6 +19,15 @@ class ContextEditor : public QWidget
 public:
     explicit ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget *parent = nullptr);
     ~ContextEditor();
+
+signals:
+    void contextSaved(KubeContext *);
+
+private slots:
+    void on_pushButtonSave_clicked();
+    void on_pushButtonCancel_clicked();
+
+    void checkContextName();
 
 private:
     Ui::ContextEditor *ui;

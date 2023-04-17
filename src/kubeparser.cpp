@@ -327,6 +327,24 @@ QString KubeParser::dumpConfig(KubeConfig *config)
         emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
 
         // optional fields
+        if (!currentCluster.tlsServerName.isEmpty())
+            emitter << YAML::Key << "tls-server-name" << YAML::Value << currentCluster.tlsServerName.toStdString();
+
+        if (!currentCluster.proxyUrl.isEmpty())
+            emitter << YAML::Key << "proxy-url" << YAML::Value << currentCluster.proxyUrl.toStdString();
+
+        if (!currentCluster.certificateAuthority.isEmpty())
+            emitter << YAML::Key << "certificate-authority" << YAML::Value << currentCluster.certificateAuthority.toStdString();
+
+        if (!currentCluster.certificateAuthorityData.isEmpty())
+            emitter << YAML::Key << "certificate-authority-data" << YAML::Value << currentCluster.certificateAuthorityData.toStdString();
+
+        if (currentCluster.insecureSkipTlsVerify)
+            emitter << YAML::Key << "insecure-skip-tls-verify" << YAML::Value << true;
+
+        if (currentCluster.disableCompression)
+            emitter << YAML::Key << "disable-compression" << YAML::Value << true;
+
         emitter << YAML::EndMap;
     }
     emitter << YAML::EndSeq;
@@ -353,12 +371,15 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     emitter << YAML::BeginSeq;
     for (QList<KubeContext>::iterator it = config->contexts->begin(); it != config->contexts->end(); ++it)
     {
-        KubeContext currentcontext = *it;
+        KubeContext currentContext = *it;
         emitter << YAML::BeginMap;
         // required fields
-        emitter << YAML::Key << "name" << YAML::Value << currentcontext.name.toStdString();
-        emitter << YAML::Key << "user" << YAML::Value << currentcontext.user->name.toStdString();
-        emitter << YAML::Key << "cluster" << YAML::Value << currentcontext.cluster->name.toStdString();
+        emitter << YAML::Key << "name" << YAML::Value << currentContext.name.toStdString();
+        emitter << YAML::Key << "user" << YAML::Value << currentContext.user->name.toStdString();
+        emitter << YAML::Key << "cluster" << YAML::Value << currentContext.cluster->name.toStdString();
+
+        if (!currentContext.clusterNamespace.isEmpty())
+            emitter << YAML::Key << "namespace" << YAML::Value << currentContext.clusterNamespace.toStdString();
 
         // optional fields
         emitter << YAML::EndMap;

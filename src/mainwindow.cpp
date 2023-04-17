@@ -311,6 +311,7 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
     QStringList contextModel = this->kubeUtils->getContextsStringList();
     this->contextModelUpdated(contextModel);
 
+#ifdef QT_DEBUG
     QString test2(KubeParser::dumpConfig(this->kubeConfig));
     QFile file("/tmp/current-kubeconfig-tmp.yaml");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -318,6 +319,7 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 
     QTextStream out(&file);
     out << test2;
+#endif
 }
 
 void MainWindow::onContextSelected()

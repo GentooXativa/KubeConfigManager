@@ -12,18 +12,28 @@ ContextEditor::ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget 
 
     KubeConfigUtils utils(this->config, this);
 
+    this->ui->lineEditContextName->setText(this->context->name);
+
+    if (!this->context->clusterNamespace.isEmpty())
+    {
+        this->ui->lineEditNamespace->setText(this->context->clusterNamespace);
+    }
+
     QStringList clusterList = utils.getClustersStringList();
     QStringListModel *clusterModel = new QStringListModel(clusterList);
     this->ui->comboBoxClusters->setModel(clusterModel);
 
     QStringList userList = utils.getUsersStringList();
-    qDebug() << "received users:" << userList;
     QStringListModel *userModel = new QStringListModel(userList);
     this->ui->comboBoxUsers->setModel(userModel);
 
-    qDebug() << "Current context:" << this->context->name;
-    qDebug() << "\tUser    :" << this->context->user->name;
-    qDebug() << "\tCluster :" << this->context->cluster->name;
+    if (this->ui->comboBoxClusters->findText(this->context->cluster->name))
+        this->ui->comboBoxClusters->setCurrentIndex(this->ui->comboBoxClusters->findText(this->context->cluster->name));
+
+    if (this->ui->comboBoxUsers->findText(this->context->user->name))
+        this->ui->comboBoxUsers->setCurrentIndex(this->ui->comboBoxUsers->findText(this->context->user->name));
+
+    connect(this->ui->lineEditContextName, &QLineEdit::textChanged, this, &ContextEditor::checkContextName);
 }
 
 ContextEditor::~ContextEditor()
@@ -31,4 +41,21 @@ ContextEditor::~ContextEditor()
     delete ui;
     delete this->context;
     delete this->config;
+}
+
+void ContextEditor::on_pushButtonSave_clicked()
+{
+}
+
+void ContextEditor::on_pushButtonCancel_clicked()
+{
+    this->close();
+}
+
+void ContextEditor::checkContextName()
+{
+    if (this->ui->lineEditContextName->text().isEmpty())
+        this->ui->labelContextName->setStyleSheet("color: #ff0000");
+    else
+        this->ui->labelContextName->setStyleSheet("");
 }
