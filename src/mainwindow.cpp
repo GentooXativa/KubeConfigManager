@@ -139,7 +139,7 @@ void MainWindow::loadSettings()
     qDebug() << "Configuration stored at:" << settingsDirectory.path();
 }
 
-void MainWindow::setWorkingDirectory(QString path, bool updateSettings)
+void MainWindow::setWorkingDirectory(QString path, bool updateSettings = true)
 {
     workingDirectory = path;
     qDebug() << "Working directory set to:" << path;
@@ -210,6 +210,41 @@ void MainWindow::clearView()
 
 bool MainWindow::checkResourcesAndDirectories()
 {
+    QDir workingDirectory(this->workingDirectory);
+
+    if (!workingDirectory.exists() || !workingDirectory.isReadable())
+    {
+        QMessageBox::critical(this, tr("Error accessing kube directory"), QString(tr("Please check if %1 exists and you have read/write access.")).arg(this->workingDirectory));
+        this->on_actionQuit_triggered();
+        return false;
+    }
+
+    if (this->appSettings->contains("paths/disabled_directory"))
+    {
+        QString disabledDirectoryPath = this->appSettings->value("paths/disabled_directory").toString();
+        QDir disabledDirectory(disabledDirectoryPath);
+
+        if (!disabledDirectory.exists())
+        {
+            QMessageBox msg_box(QMessageBox::Question, tr("Do you want to create this directory?"), QString(tr("Do you want to create this directory to store disabled configurations?\n\n%1")).arg(disabledDirectory.absolutePath()),
+                                QMessageBox::Yes | QMessageBox::No);
+            msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
+            msg_box.setButtonText(QMessageBox::No, tr("No, disable this feature"));
+            if (msg_box.exec() == QMessageBox::Yes)
+            {
+                if (!disabledDirectory.mkpath(disabledDirectoryPath))
+                {
+                    QMessageBox::critical(this, tr("Error creating disabled folder"), QString(tr("Unable to create %1, please check that you has permissions to create it and try again.")).arg(disabledDirectoryPath));
+                    return false;
+                }
+            }
+            else
+            {
+                this->appSettings->remove("paths/disabled_directory");
+                this->appSettings->sync();
+            }
+        }
+    }
     return true;
 }
 

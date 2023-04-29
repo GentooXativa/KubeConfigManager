@@ -166,11 +166,13 @@ void KubeParser::load()
                 // required properties
                 userObj.exec.apiVersion = QString::fromStdString(execData["apiVersion"].as<std::string>());
                 userObj.exec.command = QString::fromStdString(execData["command"].as<std::string>());
-                userObj.exec.installHint = QString::fromStdString(execData["installHint"].as<std::string>());
                 userObj.exec.interactiveMode = QString::fromStdString(execData["interactiveMode"].as<std::string>());
                 userObj.exec.provideClusterInfo = QString::fromStdString(execData["provideClusterInfo"].as<std::string>());
 
                 // optional properties
+                if (execData["installHint"])
+                    userObj.exec.installHint = QString::fromStdString(execData["installHint"].as<std::string>());
+
                 if (execData["env"] && execData["env"].Type() != YAML::NodeType::Null)
                 {
                     if (execData["env"].IsSequence())
@@ -315,6 +317,11 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     emitter << YAML::Key << "apiVersion" << YAML::Value << "v1";
     emitter << YAML::Key << "kind" << YAML::Value << "Config";
 
+    if (!config->currentContext.isEmpty())
+    {
+        emitter << YAML::Key << "current-context" << YAML::Value << config->currentContext.toStdString();
+    }
+
     // start of clusters sequence
     emitter << YAML::Key << "clusters";
     emitter << YAML::BeginSeq;
@@ -322,6 +329,7 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     {
         KubeCluster currentCluster = *it;
         emitter << YAML::BeginMap;
+        emitter << YAML::Key << "cluster" << YAML::Value << YAML::BeginMap;
         // required fields
         emitter << YAML::Key << "name" << YAML::Value << currentCluster.name.toStdString();
         emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
@@ -345,6 +353,7 @@ QString KubeParser::dumpConfig(KubeConfig *config)
         if (currentCluster.disableCompression)
             emitter << YAML::Key << "disable-compression" << YAML::Value << true;
 
+        emitter << YAML::EndMap;
         emitter << YAML::EndMap;
     }
     emitter << YAML::EndSeq;
@@ -373,6 +382,7 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     {
         KubeContext currentContext = *it;
         emitter << YAML::BeginMap;
+        emitter << YAML::Key << "context" << YAML::Value << YAML::BeginMap;
         // required fields
         emitter << YAML::Key << "name" << YAML::Value << currentContext.name.toStdString();
         emitter << YAML::Key << "user" << YAML::Value << currentContext.user->name.toStdString();
@@ -381,7 +391,23 @@ QString KubeParser::dumpConfig(KubeConfig *config)
         if (!currentContext.clusterNamespace.isEmpty())
             emitter << YAML::Key << "namespace" << YAML::Value << currentContext.clusterNamespace.toStdString();
 
+        if (!currentContext.extensions.isEmpty())
+        {
+            emitter << YAML::Key << "extensions" << YAML::BeginSeq;
+            for (QList<KubeConfigExtension>::iterator it = currentContext.extensions.begin(); it != currentContext.extensions.end(); ++it)
+            {
+                KubeConfigExtension extension = *it;
+                emitter << YAML::BeginMap;
+                emitter << YAML::Key << "extension" << YAML::Value << YAML::BeginMap;
+                emitter << YAML::Key << "name" << YAML::Value << extension.name.toStdString();
+                emitter << YAML::EndMap;
+                emitter << YAML::EndMap;
+            }
+            emitter << YAML::EndSeq;
+        }
+
         // optional fields
+        emitter << YAML::EndMap;
         emitter << YAML::EndMap;
     }
     emitter << YAML::EndSeq;

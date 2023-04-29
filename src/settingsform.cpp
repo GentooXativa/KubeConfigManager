@@ -11,6 +11,18 @@ SettingsForm::SettingsForm(QSettings *appSettings, QWidget *parent) : QDialog(pa
     ui->setupUi(this);
     this->appSettings = appSettings;
     this->updateUI();
+
+#ifdef QT_DEBUG
+    // if there is no settings and we are under DEBUG build, we add a save
+    // on each change
+    this->ui->groupBoxDeveloper->setVisible(true);
+    if (appSettings->allKeys().length() == 0)
+    {
+        this->ui->checkBoxDevSaveAllChanges->setChecked(true);
+    }
+#else
+    this->ui->groupBoxDeveloper->setVisible(false);
+#endif
 }
 
 SettingsForm::~SettingsForm()
@@ -30,10 +42,16 @@ void SettingsForm::on_buttonBox_accepted()
     appSettings->setValue("ui/start_minimized", ui->checkBoxStartMinimized->isChecked());
     appSettings->setValue("ui/start_hidden", ui->checkBoxStartHidden->isChecked());
     appSettings->setValue("ui/show_filepanel", ui->checkBoxShowFilePanel->isChecked());
+    appSettings->setValue("dev/save_all_changes", ui->checkBoxDevSaveAllChanges->isChecked());
 
     if (!ui->lineEditDisabledFolderPath->text().isEmpty())
     {
         appSettings->setValue("paths/disabled_directory", ui->lineEditDisabledFolderPath->text());
+    }
+
+    if (!ui->lineEditKubeCtlPath->text().isEmpty())
+    {
+        appSettings->setValue("paths/kubectl", ui->lineEditDisabledFolderPath->text());
     }
 
     emit settingsUpdated();

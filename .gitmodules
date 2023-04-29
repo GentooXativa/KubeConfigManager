@@ -1,3 +1,6 @@
 [submodule "lib/yaml-cpp"]
 	path = lib/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "lib/kubernetes"]
+	path = lib/kubernetes
+	url = https://github.com/kubernetes-client/c.git

@@ -84,7 +84,11 @@ private:
     Ui::MainWindow *ui;
     bool uiHasBeenInitialized;
     QSettings *appSettings;
+
     QString workingDirectory;
+    QString disabledDirectory;
+    QString backupDirectory;
+    QString devChangesDirectory;
 
     QStringListModel *contextsModel;
     QMenu *systemTrayMenu;

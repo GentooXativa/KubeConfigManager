@@ -55,7 +55,14 @@ void ContextEditor::on_pushButtonCancel_clicked()
 void ContextEditor::checkContextName()
 {
     if (this->ui->lineEditContextName->text().isEmpty())
+    {
+
         this->ui->labelContextName->setStyleSheet("color: #ff0000");
+        this->ui->lineEditContextName->setStyleSheet("border-color: #ff0000");
+    }
     else
+    {
+        this->ui->lineEditContextName->setStyleSheet("");
         this->ui->labelContextName->setStyleSheet("");
+    }
 }

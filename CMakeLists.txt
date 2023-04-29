@@ -16,6 +16,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core LinguistTools DBus RE
 
 add_subdirectory(lib/yaml-cpp)
 
+# add_subdirectory(lib/kubernetes/kubernetes)
 set(TS_FILES i18n/KubeConfManager_es_ES.ts)
 
 set(PROJECT_SOURCES

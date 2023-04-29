@@ -98,43 +98,43 @@
     <name>ContextEditor</name>
     <message>
         <location filename="../src/contexteditor.ui" line="14"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="176"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="178"/>
         <source>Context Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="24"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="177"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="179"/>
         <source>Context name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/contexteditor.ui" line="44"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="178"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="180"/>
         <source>Cluster</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contexteditor.ui" line="64"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="179"/>
+        <location filename="../src/contexteditor.ui" line="71"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="181"/>
         <source>User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contexteditor.ui" line="78"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="180"/>
+        <location filename="../src/contexteditor.ui" line="85"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="182"/>
         <source>Namespace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contexteditor.ui" line="120"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="181"/>
+        <location filename="../src/contexteditor.ui" line="127"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="183"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/contexteditor.ui" line="131"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="182"/>
+        <location filename="../src/contexteditor.ui" line="138"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_contexteditor.h" line="184"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -350,18 +350,40 @@
         <source>Looks like this is the first time you use this application, please check this settings and have fun!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="217"/>
+        <source>Error accessing kube directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="217"/>
+        <source>Please check if %1 exists and you have read/write access.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="228"/>
+        <source>Do you want to create this directory?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="228"/>
+        <source>Do you want to create this directory to store disabled configurations?
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsForm</name>
     <message>
         <location filename="../src/settingsform.ui" line="14"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="252"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="267"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="22"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="253"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="268"/>
         <source>WorkingDirectory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -370,92 +392,104 @@
         <location filename="../src/settingsform.ui" line="65"/>
         <location filename="../src/settingsform.ui" line="94"/>
         <location filename="../src/settingsform.ui" line="152"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="254"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="256"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="258"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="263"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="269"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="271"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="273"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="278"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="51"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="255"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="270"/>
         <source>DisabledFolderPath</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="80"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="257"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="272"/>
         <source>kubectl executable:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="105"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="259"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="274"/>
         <source>Check</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="120"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="260"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="275"/>
         <source>Behaviour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="126"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="261"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="276"/>
         <source>Backup configuration before save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="138"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="262"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="277"/>
         <source>Backup Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="181"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="264"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="279"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="187"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="265"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="280"/>
         <source>Start minimized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="194"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="266"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="281"/>
         <source>Start hidden (system tray)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/settingsform.ui" line="201"/>
-        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="267"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="282"/>
         <source>Show file panel on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settingsform.cpp" line="25"/>
-        <location filename="../src/settingsform.cpp" line="47"/>
+        <location filename="../src/settingsform.ui" line="221"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="283"/>
+        <source>Developer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.ui" line="227"/>
+        <location filename="../build/KubeConfManager_autogen/include/ui_settingsform.h" line="284"/>
+        <source>Save all changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsform.cpp" line="37"/>
+        <location filename="../src/settingsform.cpp" line="65"/>
         <source>Please, configure this application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settingsform.cpp" line="25"/>
-        <location filename="../src/settingsform.cpp" line="47"/>
+        <location filename="../src/settingsform.cpp" line="37"/>
+        <location filename="../src/settingsform.cpp" line="65"/>
         <source>You need to provide at least a working directory to continue, this directory will hold all the configuration files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settingsform.cpp" line="79"/>
+        <location filename="../src/settingsform.cpp" line="97"/>
         <source>Default directory not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/settingsform.cpp" line="79"/>
+        <location filename="../src/settingsform.cpp" line="97"/>
         <source>Default directory for kubectl not found, please provide a working directory.</source>
         <translation type="unfinished"></translation>
     </message>
