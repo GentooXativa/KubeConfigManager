@@ -37,7 +37,7 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
-        version: '$ENV{QT_VERSION}'
+        version: '${{env.QT_VERSION}}'
         
     - uses: actions/checkout@v3
     - name: install submodules
@@ -62,4 +62,4 @@ jobs:
       id: upload_artifact
       with:
         path: ./${{github.workspace}}/build/KubeConfManager
-        name: KubeConfManager-${{ matrix.config.artifact }}
+        name: KubeConfManager-${{ github.ref }}-${{ matrix.config.artifact }}
