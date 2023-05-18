@@ -329,9 +329,9 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     {
         KubeCluster currentCluster = *it;
         emitter << YAML::BeginMap;
-        emitter << YAML::Key << "cluster" << YAML::Value << YAML::BeginMap;
-        // required fields
         emitter << YAML::Key << "name" << YAML::Value << currentCluster.name.toStdString();
+        // required fields
+        emitter << YAML::Key << "cluster" << YAML::Value << YAML::BeginMap;
         emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
 
         // optional fields
@@ -353,6 +353,10 @@ QString KubeParser::dumpConfig(KubeConfig *config)
         if (currentCluster.disableCompression)
             emitter << YAML::Key << "disable-compression" << YAML::Value << true;
 
+        if( !currentCluster.extensions.isEmpty() ){
+            qDebug() << "Cluster extensions";
+        }
+
         emitter << YAML::EndMap;
         emitter << YAML::EndMap;
     }
@@ -368,6 +372,33 @@ QString KubeParser::dumpConfig(KubeConfig *config)
         emitter << YAML::BeginMap;
         // required fields
         emitter << YAML::Key << "name" << YAML::Value << currentuser.name.toStdString();
+        emitter << YAML::Key << "user" << YAML::Value << YAML::BeginMap;
+
+        if (!currentuser.token.isEmpty())
+            emitter << YAML::Key << "token" << YAML::Value << currentuser.token.toStdString();
+
+        if (!currentuser.tokenFile.isEmpty())
+            emitter << YAML::Key << "token-file" << YAML::Value << currentuser.tokenFile.toStdString();
+
+        if (!currentuser.username.isEmpty())
+            emitter << YAML::Key << "username" << YAML::Value << currentuser.username.toStdString();
+
+        if (!currentuser.password.isEmpty())
+            emitter << YAML::Key << "password" << YAML::Value << currentuser.password.toStdString();
+
+        if (!currentuser.clientKey.isEmpty())
+            emitter << YAML::Key << "client-key" << YAML::Value << currentuser.clientKey.toStdString();
+
+        if (!currentuser.clientKeyData.isEmpty())
+            emitter << YAML::Key << "client-key-data" << YAML::Value << currentuser.clientKeyData.toStdString();
+
+        if (!currentuser.clientCertificate.isEmpty())
+            emitter << YAML::Key << "client-certificate" << YAML::Value << currentuser.clientCertificate.toStdString();
+
+        if (!currentuser.clientCertificateData.isEmpty())
+            emitter << YAML::Key << "client-certificate-data" << YAML::Value << currentuser.clientCertificateData.toStdString();
+
+        emitter << YAML::EndMap; // user endMap
 
         // optional fields
         emitter << YAML::EndMap;
@@ -382,9 +413,9 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     {
         KubeContext currentContext = *it;
         emitter << YAML::BeginMap;
-        emitter << YAML::Key << "context" << YAML::Value << YAML::BeginMap;
-        // required fields
         emitter << YAML::Key << "name" << YAML::Value << currentContext.name.toStdString();
+        // required fields
+        emitter << YAML::Key << "context" << YAML::Value << YAML::BeginMap;
         emitter << YAML::Key << "user" << YAML::Value << currentContext.user->name.toStdString();
         emitter << YAML::Key << "cluster" << YAML::Value << currentContext.cluster->name.toStdString();
 
@@ -399,8 +430,16 @@ QString KubeParser::dumpConfig(KubeConfig *config)
                 KubeConfigExtension extension = *it;
                 emitter << YAML::BeginMap;
                 emitter << YAML::Key << "extension" << YAML::Value << YAML::BeginMap;
-                emitter << YAML::Key << "name" << YAML::Value << extension.name.toStdString();
+                emitter << YAML::Key << "provider" << YAML::Value << extension.provider.toStdString();
+                emitter << YAML::Key << "version" << YAML::Value << extension.version.toStdString();
+
+                if( !extension.lastUpdate.isEmpty() )
+                    emitter << YAML::Key << "last-update" << YAML::Value << extension.lastUpdate.toStdString();
+
                 emitter << YAML::EndMap;
+
+                emitter << YAML::Key << "name" << YAML::Value << extension.name.toStdString();
+
                 emitter << YAML::EndMap;
             }
             emitter << YAML::EndSeq;
