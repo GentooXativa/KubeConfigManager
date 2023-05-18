@@ -9,19 +9,35 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  QT_VERSION: 6.5.0
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+        - {
+            name: "Windows Latest x64", artifact: "Windows-x64.zip",
+            os: windows-latest,
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
+            name: "Windows Latest x86", artifact: "Windows-x86.zip",
+            os: windows-latest,
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
+          }
+        - {
+            name: "Linux Latest x64", artifact: "Linux-x64.zip",
+            os: ubuntu-latest
+          }
 
     steps:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.5.0'
+        version: '$ENV{QT_VERSION}'
         
     - uses: actions/checkout@v3
     - name: install submodules
@@ -42,3 +58,8 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
 
+    - uses: actions/upload-artifact@v1
+      id: upload_artifact
+      with:
+        path: ./${{github.workspace}}/build/KubeConfManager
+        name: KubeConfManager-${{ matrix.config.artifact }}
