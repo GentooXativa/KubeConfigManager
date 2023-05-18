@@ -29,6 +29,12 @@ private slots:
 
     void on_toolButtonDisabledFolderPath_triggered(QAction *arg1);
 
+    void on_pushButtonKubeCtlCheck_clicked();
+
+    void on_checkBoxStartHidden_toggled(bool checked);
+
+    void on_checkBoxStartMinimized_toggled(bool checked);
+
 private:
     void updateUI();
     Ui::SettingsForm *ui;

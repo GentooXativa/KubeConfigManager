@@ -9,20 +9,34 @@
 
 #include "kubeparser.h"
 #include "settingsform.h"
+#include "contexteditor.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    qApp->installEventFilter(this);
     uiHasBeenInitialized = false;
+
+    qApp->installEventFilter(this);
     appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
-    this->showFilesPanel = true;
     ui->setupUi(this);
+
+    this->initializeApp();
+
+    uiHasBeenInitialized = true;
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::initializeApp()
+{
+    this->showFilesPanel = true;
 
     contextsModel = new QStringListModel(this);
     ui->listViewContexts->setModel(contextsModel);
 
-    this->loadSettings();
     this->clearView();
 
     if (!workingDirectory.isEmpty())
@@ -33,20 +47,32 @@ MainWindow::MainWindow(QWidget *parent)
         this->on_listViewFiles_activated(this->ui->listViewFiles->indexAt(QPoint(0, 0)));
     }
 
-    uiHasBeenInitialized = true;
+    this->on_actionToggleFilesPanel_toggled(this->showFilesPanel);
+    this->ui->actionToggleFilesPanel->setChecked(this->showFilesPanel);
     this->createTrayIcon();
 
-    connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
-}
+    if (appSettings->value("ui/start_minimized").toBool())
+    {
+        qDebug() << "Starting minimized";
+        this->showMinimized();
+    }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
+    if (!appSettings->value("ui/start_hidden").toBool())
+    {
+        this->show();
+    }
+    else
+    {
+        this->hide();
+    }
+
+    connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
 }
 
 void MainWindow::on_actionQuit_triggered()
 {
     this->close();
+    qApp->quit();
 }
 
 void MainWindow::on_toolButtonWorkingDirectory_clicked()
@@ -95,6 +121,13 @@ void MainWindow::loadSettings()
     QStringList keys = appSettings->allKeys();
     qDebug() << "Keys found in config:" << keys.length();
 
+    if (keys.length() == 0)
+    {
+        QMessageBox::information(this, tr("Configuration not found"), tr("Looks like this is the first time you use this application, please check this settings and have fun!"));
+        this->on_actionSettings_triggered();
+        return;
+    }
+
     if (appSettings->contains("paths/working_directory"))
     {
         setWorkingDirectory(appSettings->value("paths/working_directory").toString(), false);
@@ -106,7 +139,7 @@ void MainWindow::loadSettings()
     qDebug() << "Configuration stored at:" << settingsDirectory.path();
 }
 
-void MainWindow::setWorkingDirectory(QString path, bool updateSettings)
+void MainWindow::setWorkingDirectory(QString path, bool updateSettings = true)
 {
     workingDirectory = path;
     qDebug() << "Working directory set to:" << path;
@@ -177,6 +210,41 @@ void MainWindow::clearView()
 
 bool MainWindow::checkResourcesAndDirectories()
 {
+    QDir workingDirectory(this->workingDirectory);
+
+    if (!workingDirectory.exists() || !workingDirectory.isReadable())
+    {
+        QMessageBox::critical(this, tr("Error accessing kube directory"), QString(tr("Please check if %1 exists and you have read/write access.")).arg(this->workingDirectory));
+        this->on_actionQuit_triggered();
+        return false;
+    }
+
+    if (this->appSettings->contains("paths/disabled_directory"))
+    {
+        QString disabledDirectoryPath = this->appSettings->value("paths/disabled_directory").toString();
+        QDir disabledDirectory(disabledDirectoryPath);
+
+        if (!disabledDirectory.exists())
+        {
+            QMessageBox msg_box(QMessageBox::Question, tr("Do you want to create this directory?"), QString(tr("Do you want to create this directory to store disabled configurations?\n\n%1")).arg(disabledDirectory.absolutePath()),
+                                QMessageBox::Yes | QMessageBox::No);
+            msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
+            msg_box.setButtonText(QMessageBox::No, tr("No, disable this feature"));
+            if (msg_box.exec() == QMessageBox::Yes)
+            {
+                if (!disabledDirectory.mkpath(disabledDirectoryPath))
+                {
+                    QMessageBox::critical(this, tr("Error creating disabled folder"), QString(tr("Unable to create %1, please check that you has permissions to create it and try again.")).arg(disabledDirectoryPath));
+                    return false;
+                }
+            }
+            else
+            {
+                this->appSettings->remove("paths/disabled_directory");
+                this->appSettings->sync();
+            }
+        }
+    }
     return true;
 }
 
@@ -250,17 +318,17 @@ void MainWindow::reloadDefaultConfiguration()
 void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
     qDebug() << "Context activated:" << index.data().toString();
-    qDebug() << "Contexts loaded:" << this->contexts->size();
-    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
-    {
-        KubeContext current = *i;
-        if (current.name == index.data().toString())
-        {
-            this->selectedContext = current;
-            emit contextHasBeenSelected();
-            return;
-        }
-    }
+    //    qDebug() << "Contexts loaded:" << this->contexts->size();
+    //    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
+    //    {
+    //        KubeContext current = *i;
+    //        if (current.name == index.data().toString())
+    //        {
+    //            this->selectedContext = current;
+    //            emit contextHasBeenSelected();
+    //            return;
+    //        }
+    //    }
 }
 
 void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
@@ -274,6 +342,19 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 
     this->ui->actionEditClusters->setEnabled(true);
     this->ui->actionEditUsers->setEnabled(true);
+
+    QStringList contextModel = this->kubeUtils->getContextsStringList();
+    this->contextModelUpdated(contextModel);
+
+#ifdef QT_DEBUG
+    QString test2(KubeParser::dumpConfig(this->kubeConfig));
+    QFile file("/tmp/current-kubeconfig-tmp.yaml");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    out << test2;
+#endif
 }
 
 void MainWindow::onContextSelected()
@@ -325,4 +406,23 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
     return QObject::eventFilter(obj, event);
+}
+
+void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
+{
+    if (showPanel)
+    {
+        this->ui->dockWidgetConfigurationFiles->show();
+    }
+    else
+    {
+        this->ui->dockWidgetConfigurationFiles->hide();
+    }
+}
+
+void MainWindow::on_listViewContexts_doubleClicked(const QModelIndex &index)
+{
+    ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
+    editor->setWindowFlags(Qt::Tool | Qt::Dialog);
+    editor->show();
 }

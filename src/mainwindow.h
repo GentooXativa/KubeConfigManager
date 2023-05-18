@@ -49,6 +49,7 @@ private slots:
     void on_actionSettings_triggered();
     void loadSettings();
     void clearView();
+    void initializeApp();
     void reloadDefaultConfiguration();
 
     void on_actionSwitchContext_triggered();
@@ -67,6 +68,10 @@ private slots:
 
     void on_actionNew_KubeConfig_file_triggered();
 
+    void on_actionToggleFilesPanel_toggled(bool arg1);
+
+    void on_listViewContexts_doubleClicked(const QModelIndex &index);
+
 signals:
     void contextHasBeenSelected();
     void closeContextSwitcher();
@@ -79,7 +84,11 @@ private:
     Ui::MainWindow *ui;
     bool uiHasBeenInitialized;
     QSettings *appSettings;
+
     QString workingDirectory;
+    QString disabledDirectory;
+    QString backupDirectory;
+    QString devChangesDirectory;
 
     QStringListModel *contextsModel;
     QMenu *systemTrayMenu;

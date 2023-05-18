@@ -1,4 +1,5 @@
 #include "kubeconfigutils.h"
+#include "kubeparser.h"
 
 KubeConfigUtils::KubeConfigUtils(KubeConfig *kConfig, QObject *parent) : QObject(parent)
 {
@@ -70,6 +71,18 @@ QStringList KubeConfigUtils::getContextsStringList()
     for (QList<KubeContext>::iterator it = this->kubeConfig->contexts->begin(); it != this->kubeConfig->contexts->end(); ++it)
     {
         KubeContext current = *it;
+        list.append(current.name);
+    }
+
+    return list;
+}
+
+QStringList KubeConfigUtils::getUsersStringList()
+{
+    QStringList list;
+    for (QList<KubeUser>::iterator it = this->kubeConfig->users->begin(); it != this->kubeConfig->users->end(); ++it)
+    {
+        KubeUser current = *it;
         list.append(current.name);
     }
 

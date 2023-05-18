@@ -27,6 +27,8 @@ ContextSwitcher::ContextSwitcher(KubeConfig *config, QSystemTrayIcon *trayIcon, 
 ContextSwitcher::~ContextSwitcher()
 {
     delete ui;
+    delete this->currentKubeConfig;
+    delete this->trayIcon;
 }
 
 void ContextSwitcher::on_listView_activated(const QModelIndex &index)
@@ -46,7 +48,7 @@ void ContextSwitcher::on_listView_activated(const QModelIndex &index)
 
     QByteArray result = kubectl.readAll();
 
-    qDebug() << "New context selected";
+    qDebug() << "New context selected:" << QString::fromStdString(result.toStdString());
     this->trayIcon->showMessage(tr("New context selected"), QString(tr("%1 has been selected as active context.")).arg(index.data().toString()), QSystemTrayIcon::Information);
     this->close();
 }
