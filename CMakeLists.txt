@@ -44,6 +44,12 @@ set(PROJECT_SOURCES
     src/contexteditor.h
     src/contexteditor.cpp
     src/contexteditor.ui
+    src/kubeconfigmerger.h
+    src/kubeconfigmerger.cpp
+    src/kubeconfigmerger.ui
+    src/createnewkubeconfigdialog.h
+    src/createnewkubeconfigdialog.cpp
+    src/createnewkubeconfigdialog.ui
     assets.qrc
     ${TS_FILES}
 )
