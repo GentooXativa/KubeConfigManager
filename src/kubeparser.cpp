@@ -324,135 +324,171 @@ QString KubeParser::dumpConfig(KubeConfig *config)
 
     // start of clusters sequence
     emitter << YAML::Key << "clusters";
-    emitter << YAML::BeginSeq;
-    for (QList<KubeCluster>::iterator it = config->clusters->begin(); it != config->clusters->end(); ++it)
+
+    if (!config->clusters->isEmpty())
     {
-        KubeCluster currentCluster = *it;
-        emitter << YAML::BeginMap;
-        emitter << YAML::Key << "name" << YAML::Value << currentCluster.name.toStdString();
-        // required fields
-        emitter << YAML::Key << "cluster" << YAML::Value << YAML::BeginMap;
-        emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
+        emitter << YAML::BeginSeq;
+        for (QList<KubeCluster>::iterator it = config->clusters->begin(); it != config->clusters->end(); ++it)
+        {
+            KubeCluster currentCluster = *it;
+            emitter << YAML::BeginMap;
+            emitter << YAML::Key << "name" << YAML::Value << currentCluster.name.toStdString();
+            // required fields
+            emitter << YAML::Key << "cluster" << YAML::Value << YAML::BeginMap;
+            emitter << YAML::Key << "server" << YAML::Value << currentCluster.server.toStdString();
 
-        // optional fields
-        if (!currentCluster.tlsServerName.isEmpty())
-            emitter << YAML::Key << "tls-server-name" << YAML::Value << currentCluster.tlsServerName.toStdString();
+            // optional fields
+            if (!currentCluster.tlsServerName.isEmpty())
+                emitter << YAML::Key << "tls-server-name" << YAML::Value << currentCluster.tlsServerName.toStdString();
 
-        if (!currentCluster.proxyUrl.isEmpty())
-            emitter << YAML::Key << "proxy-url" << YAML::Value << currentCluster.proxyUrl.toStdString();
+            if (!currentCluster.proxyUrl.isEmpty())
+                emitter << YAML::Key << "proxy-url" << YAML::Value << currentCluster.proxyUrl.toStdString();
 
-        if (!currentCluster.certificateAuthority.isEmpty())
-            emitter << YAML::Key << "certificate-authority" << YAML::Value << currentCluster.certificateAuthority.toStdString();
+            if (!currentCluster.certificateAuthority.isEmpty())
+                emitter << YAML::Key << "certificate-authority" << YAML::Value << currentCluster.certificateAuthority.toStdString();
 
-        if (!currentCluster.certificateAuthorityData.isEmpty())
-            emitter << YAML::Key << "certificate-authority-data" << YAML::Value << currentCluster.certificateAuthorityData.toStdString();
+            if (!currentCluster.certificateAuthorityData.isEmpty())
+                emitter << YAML::Key << "certificate-authority-data" << YAML::Value << currentCluster.certificateAuthorityData.toStdString();
 
-        if (currentCluster.insecureSkipTlsVerify)
-            emitter << YAML::Key << "insecure-skip-tls-verify" << YAML::Value << true;
+            if (currentCluster.insecureSkipTlsVerify)
+                emitter << YAML::Key << "insecure-skip-tls-verify" << YAML::Value << true;
 
-        if (currentCluster.disableCompression)
-            emitter << YAML::Key << "disable-compression" << YAML::Value << true;
+            if (currentCluster.disableCompression)
+                emitter << YAML::Key << "disable-compression" << YAML::Value << true;
 
-        if( !currentCluster.extensions.isEmpty() ){
-            qDebug() << "Cluster extensions";
+            if (!currentCluster.extensions.isEmpty())
+            {
+                qDebug() << "Cluster extensions";
+            }
+
+            emitter << YAML::EndMap;
+            emitter << YAML::EndMap;
         }
-
-        emitter << YAML::EndMap;
-        emitter << YAML::EndMap;
+        emitter << YAML::EndSeq;
+        // end of clusters sequence
     }
-    emitter << YAML::EndSeq;
-    // end of clusters sequence
-
+    else
+    {
+        emitter << YAML::BeginMap << YAML::EndMap;
+    }
     // start of users sequence
     emitter << YAML::Key << "users";
-    emitter << YAML::BeginSeq;
-    for (QList<KubeUser>::iterator it = config->users->begin(); it != config->users->end(); ++it)
+
+    if (!config->users->isEmpty())
     {
-        KubeUser currentuser = *it;
-        emitter << YAML::BeginMap;
-        // required fields
-        emitter << YAML::Key << "name" << YAML::Value << currentuser.name.toStdString();
-        emitter << YAML::Key << "user" << YAML::Value << YAML::BeginMap;
+        emitter << YAML::BeginSeq;
+        for (QList<KubeUser>::iterator it = config->users->begin(); it != config->users->end(); ++it)
+        {
+            KubeUser currentuser = *it;
+            emitter << YAML::BeginMap;
+            // required fields
+            emitter << YAML::Key << "name" << YAML::Value << currentuser.name.toStdString();
+            emitter << YAML::Key << "user" << YAML::Value << YAML::BeginMap;
 
-        if (!currentuser.token.isEmpty())
-            emitter << YAML::Key << "token" << YAML::Value << currentuser.token.toStdString();
+            if (!currentuser.token.isEmpty())
+                emitter << YAML::Key << "token" << YAML::Value << currentuser.token.toStdString();
 
-        if (!currentuser.tokenFile.isEmpty())
-            emitter << YAML::Key << "token-file" << YAML::Value << currentuser.tokenFile.toStdString();
+            if (!currentuser.tokenFile.isEmpty())
+                emitter << YAML::Key << "token-file" << YAML::Value << currentuser.tokenFile.toStdString();
 
-        if (!currentuser.username.isEmpty())
-            emitter << YAML::Key << "username" << YAML::Value << currentuser.username.toStdString();
+            if (!currentuser.username.isEmpty())
+                emitter << YAML::Key << "username" << YAML::Value << currentuser.username.toStdString();
 
-        if (!currentuser.password.isEmpty())
-            emitter << YAML::Key << "password" << YAML::Value << currentuser.password.toStdString();
+            if (!currentuser.password.isEmpty())
+                emitter << YAML::Key << "password" << YAML::Value << currentuser.password.toStdString();
 
-        if (!currentuser.clientKey.isEmpty())
-            emitter << YAML::Key << "client-key" << YAML::Value << currentuser.clientKey.toStdString();
+            if (!currentuser.clientKey.isEmpty())
+                emitter << YAML::Key << "client-key" << YAML::Value << currentuser.clientKey.toStdString();
 
-        if (!currentuser.clientKeyData.isEmpty())
-            emitter << YAML::Key << "client-key-data" << YAML::Value << currentuser.clientKeyData.toStdString();
+            if (!currentuser.clientKeyData.isEmpty())
+                emitter << YAML::Key << "client-key-data" << YAML::Value << currentuser.clientKeyData.toStdString();
 
-        if (!currentuser.clientCertificate.isEmpty())
-            emitter << YAML::Key << "client-certificate" << YAML::Value << currentuser.clientCertificate.toStdString();
+            if (!currentuser.clientCertificate.isEmpty())
+                emitter << YAML::Key << "client-certificate" << YAML::Value << currentuser.clientCertificate.toStdString();
 
-        if (!currentuser.clientCertificateData.isEmpty())
-            emitter << YAML::Key << "client-certificate-data" << YAML::Value << currentuser.clientCertificateData.toStdString();
+            if (!currentuser.clientCertificateData.isEmpty())
+                emitter << YAML::Key << "client-certificate-data" << YAML::Value << currentuser.clientCertificateData.toStdString();
 
-        emitter << YAML::EndMap; // user endMap
+            emitter << YAML::EndMap; // user endMap
 
-        // optional fields
-        emitter << YAML::EndMap;
+            // optional fields
+            emitter << YAML::EndMap;
+        }
+        emitter << YAML::EndSeq;
+        // end of users sequence
     }
-    emitter << YAML::EndSeq;
-    // end of users sequence
-
+    else
+    {
+        emitter << YAML::BeginMap << YAML::EndMap;
+    }
     // start of contexts sequence
     emitter << YAML::Key << "contexts";
-    emitter << YAML::BeginSeq;
-    for (QList<KubeContext>::iterator it = config->contexts->begin(); it != config->contexts->end(); ++it)
+
+    if (!config->contexts->isEmpty())
     {
-        KubeContext currentContext = *it;
-        emitter << YAML::BeginMap;
-        emitter << YAML::Key << "name" << YAML::Value << currentContext.name.toStdString();
-        // required fields
-        emitter << YAML::Key << "context" << YAML::Value << YAML::BeginMap;
-        emitter << YAML::Key << "user" << YAML::Value << currentContext.user->name.toStdString();
-        emitter << YAML::Key << "cluster" << YAML::Value << currentContext.cluster->name.toStdString();
-
-        if (!currentContext.clusterNamespace.isEmpty())
-            emitter << YAML::Key << "namespace" << YAML::Value << currentContext.clusterNamespace.toStdString();
-
-        if (!currentContext.extensions.isEmpty())
+        emitter << YAML::BeginSeq;
+        for (QList<KubeContext>::iterator it = config->contexts->begin(); it != config->contexts->end(); ++it)
         {
-            emitter << YAML::Key << "extensions" << YAML::BeginSeq;
-            for (QList<KubeConfigExtension>::iterator it = currentContext.extensions.begin(); it != currentContext.extensions.end(); ++it)
+            KubeContext currentContext = *it;
+            emitter << YAML::BeginMap;
+            emitter << YAML::Key << "name" << YAML::Value << currentContext.name.toStdString();
+            // required fields
+            emitter << YAML::Key << "context" << YAML::Value << YAML::BeginMap;
+            emitter << YAML::Key << "user" << YAML::Value << currentContext.user->name.toStdString();
+            emitter << YAML::Key << "cluster" << YAML::Value << currentContext.cluster->name.toStdString();
+
+            if (!currentContext.clusterNamespace.isEmpty())
+                emitter << YAML::Key << "namespace" << YAML::Value << currentContext.clusterNamespace.toStdString();
+
+            if (!currentContext.extensions.isEmpty())
             {
-                KubeConfigExtension extension = *it;
-                emitter << YAML::BeginMap;
-                emitter << YAML::Key << "extension" << YAML::Value << YAML::BeginMap;
-                emitter << YAML::Key << "provider" << YAML::Value << extension.provider.toStdString();
-                emitter << YAML::Key << "version" << YAML::Value << extension.version.toStdString();
+                emitter << YAML::Key << "extensions" << YAML::BeginSeq;
+                for (QList<KubeConfigExtension>::iterator it = currentContext.extensions.begin(); it != currentContext.extensions.end(); ++it)
+                {
+                    KubeConfigExtension extension = *it;
+                    emitter << YAML::BeginMap;
+                    emitter << YAML::Key << "extension" << YAML::Value << YAML::BeginMap;
+                    emitter << YAML::Key << "provider" << YAML::Value << extension.provider.toStdString();
+                    emitter << YAML::Key << "version" << YAML::Value << extension.version.toStdString();
 
-                if( !extension.lastUpdate.isEmpty() )
-                    emitter << YAML::Key << "last-update" << YAML::Value << extension.lastUpdate.toStdString();
+                    if (!extension.lastUpdate.isEmpty())
+                        emitter << YAML::Key << "last-update" << YAML::Value << extension.lastUpdate.toStdString();
 
-                emitter << YAML::EndMap;
+                    emitter << YAML::EndMap;
 
-                emitter << YAML::Key << "name" << YAML::Value << extension.name.toStdString();
+                    emitter << YAML::Key << "name" << YAML::Value << extension.name.toStdString();
 
-                emitter << YAML::EndMap;
+                    emitter << YAML::EndMap;
+                }
+                emitter << YAML::EndSeq;
             }
-            emitter << YAML::EndSeq;
+
+            // optional fields
+            emitter << YAML::EndMap;
+            emitter << YAML::EndMap;
         }
-
-        // optional fields
-        emitter << YAML::EndMap;
-        emitter << YAML::EndMap;
+        emitter << YAML::EndSeq;
+        // end of contexts sequence
     }
-    emitter << YAML::EndSeq;
-    // end of contexts sequence
-
+    else
+    {
+        emitter << YAML::BeginMap << YAML::EndMap;
+    }
     emitter << YAML::EndMap;
 
     return QString::fromStdString(emitter.c_str());
+}
+
+KubeConfig *KubeParser::createEmptyConfig()
+{
+    KubeConfig *nConfig = new KubeConfig();
+
+    nConfig->originalFilePath = new QString("");
+    nConfig->preferences = 0;
+
+    nConfig->clusters = new KubeClusterList();
+    nConfig->users = new KubeUserList();
+    nConfig->contexts = new KubeContextList();
+
+    return nConfig;
 }

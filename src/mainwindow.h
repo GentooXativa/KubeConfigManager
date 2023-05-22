@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QMimeData>
 #include <QDebug>
 #include <QStringListModel>
 #include <QMenu>
@@ -15,7 +16,9 @@
 #include "kubeconfigutils.h"
 #include "KubeConfManager.h"
 #include "clustereditor.h"
+#include "kubeconfigmerger.h"
 #include "contextswitcher.h"
+#include "createnewkubeconfigdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -33,12 +36,14 @@ public:
     ~MainWindow();
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    //    void dragMoveEvent(QDragMoveEvent *event) override;
+    //    void dragLeaveEvent(QDragLeaveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 private slots:
     void on_actionQuit_triggered();
     void on_toolButtonWorkingDirectory_clicked();
-    void on_actionReload_triggered();
     void on_listViewFiles_activated(const QModelIndex &index);
 
     void errorLoadingFileParser(const QString message);
@@ -72,6 +77,9 @@ private slots:
 
     void on_listViewContexts_doubleClicked(const QModelIndex &index);
 
+    void onMergeFilesAction();
+    void onNewKubeConfigFile();
+    void onReloadTriggered();
 signals:
     void contextHasBeenSelected();
     void closeContextSwitcher();

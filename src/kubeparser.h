@@ -19,6 +19,7 @@ public:
     KubeConfig *getKubeConfig();
 
     static QString dumpConfig(KubeConfig *config);
+    static KubeConfig *createEmptyConfig();
 signals:
     void errorLoadingFile(QString message);
     void clustersLoaded(QStringList clusters);

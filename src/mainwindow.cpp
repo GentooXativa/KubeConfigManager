@@ -15,12 +15,28 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     uiHasBeenInitialized = false;
+    setAcceptDrops(true);
 
     qApp->installEventFilter(this);
-    appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
-    ui->setupUi(this);
 
+    appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
+
+    ui->setupUi(this);
     this->initializeApp();
+
+    connect(ui->pushButtonMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
+    connect(ui->pushButtonHomeMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
+
+    connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
+
+    connect(ui->actionReload, &QAction::triggered, this, &MainWindow::onReloadTriggered);
+
+    connect(ui->actionStackedWidgetHome, &QAction::triggered, this, [=]()
+            { ui->stackedWidget->setCurrentIndex(0); });
+    connect(ui->actionStackedWidgetConfig, &QAction::triggered, this, [=]()
+            { ui->stackedWidget->setCurrentIndex(1); });
+    connect(ui->actionStackedWidgetMerger, &QAction::triggered, this, [=]()
+            { ui->stackedWidget->setCurrentIndex(2); });
 
     uiHasBeenInitialized = true;
 }
@@ -42,13 +58,14 @@ void MainWindow::initializeApp()
     if (!workingDirectory.isEmpty())
     {
         ui->lineEditWorkingDirectory->setText(workingDirectory);
-        this->on_actionReload_triggered();
+        this->onReloadTriggered();
         this->ui->listViewFiles->selectionModel()->select(this->ui->listViewFiles->indexAt(QPoint(0, 0)), QItemSelectionModel::Select);
         this->on_listViewFiles_activated(this->ui->listViewFiles->indexAt(QPoint(0, 0)));
     }
 
     this->on_actionToggleFilesPanel_toggled(this->showFilesPanel);
     this->ui->actionToggleFilesPanel->setChecked(this->showFilesPanel);
+
     this->createTrayIcon();
 
     if (appSettings->value("ui/start_minimized").toBool())
@@ -65,8 +82,6 @@ void MainWindow::initializeApp()
     {
         this->hide();
     }
-
-    connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -101,7 +116,7 @@ void MainWindow::on_toolButtonWorkingDirectory_clicked()
     return;
 }
 
-void MainWindow::on_actionReload_triggered()
+void MainWindow::onReloadTriggered()
 {
     if (workingDirectory.isEmpty())
     {
@@ -159,6 +174,35 @@ void MainWindow::setWorkingDirectory(QString path, bool updateSettings = true)
 void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
 {
     qDebug() << "Activated on:" << index.data().toString();
+    qDebug() << "Current selection count:" << ui->listViewFiles->selectionModel()->selectedIndexes().size();
+
+    if (ui->listViewFiles->selectionModel()->selectedIndexes().size() >= 2)
+    {
+        ui->pushButtonMergeFiles->setEnabled(true);
+        ui->pushButtonDeleteFile->setEnabled(true);
+        ui->pushButtonCloneFile->setEnabled(false);
+        ui->pushButtonRenameFile->setEnabled(false);
+        ui->stackedWidget->setCurrentIndex(0);
+        return;
+    }
+    else if (ui->listViewFiles->selectionModel()->selectedIndexes().size() == 1)
+    {
+        ui->pushButtonMergeFiles->setEnabled(false);
+        ui->pushButtonDeleteFile->setEnabled(true);
+        ui->pushButtonCloneFile->setEnabled(true);
+        ui->pushButtonRenameFile->setEnabled(true);
+        ui->stackedWidget->setCurrentIndex(1);
+    }
+    else
+    {
+        ui->pushButtonMergeFiles->setEnabled(false);
+        ui->pushButtonDeleteFile->setEnabled(false);
+        ui->pushButtonCloneFile->setEnabled(false);
+        ui->pushButtonRenameFile->setEnabled(false);
+        ui->stackedWidget->setCurrentIndex(0);
+        return;
+    }
+
     QString path = workingDirectory;
     path.append("/");
     path.append(index.data().toString());
@@ -166,7 +210,6 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
     KubeParser parser(path, this);
 
     connect(&parser, &KubeParser::errorLoadingFile, this, &MainWindow::errorLoadingFileParser);
-
     // connect(&parser, &KubeParser::contextsLoaded, this, &MainWindow::contextModelUpdated);
     connect(&parser, &KubeParser::kubeConfigLoaded, this, &MainWindow::kubeConfigUpdated);
 
@@ -337,8 +380,8 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
     this->kubeConfig = kConfig;
     this->kubeUtils = new KubeConfigUtils(this->kubeConfig, this);
 
-    KubeContext *test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
-    qDebug() << "\tSelected context:" << test->name;
+    // KubeContext *test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
+    // qDebug() << "\tSelected context:" << test->name;
 
     this->ui->actionEditClusters->setEnabled(true);
     this->ui->actionEditUsers->setEnabled(true);
@@ -425,4 +468,59 @@ void MainWindow::on_listViewContexts_doubleClicked(const QModelIndex &index)
     ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
     editor->setWindowFlags(Qt::Tool | Qt::Dialog);
     editor->show();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+
+    qDebug() << "Drop Event received: " << event->mimeData()->formats().join(",");
+    qDebug() << "Drop content: " << event->mimeData()->text();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("text/plain"))
+        event->acceptProposedAction();
+
+    qDebug() << "Drop Event looks like" << event->mimeData()->formats().join(",");
+
+    if (event->mimeData()->hasUrls())
+        qDebug() << "Has urls";
+
+    if (event->mimeData()->hasText())
+        qDebug() << "Has text";
+}
+
+void MainWindow::onMergeFilesAction()
+{
+    KubeConfigMerger *mergerWidget = new KubeConfigMerger(ui->stackedWidget);
+    ui->stackedWidget->setCurrentIndex(2);
+    ui->stackedWidget->setCurrentWidget(mergerWidget);
+}
+
+void MainWindow::onNewKubeConfigFile()
+{
+    QFile defaultConfig(QString("%1/config").arg(this->workingDirectory));
+    CreateNewKubeConfigDialog *dialog = new CreateNewKubeConfigDialog(this->workingDirectory, defaultConfig.exists(), this);
+    dialog->setWindowFlags(Qt::Tool | Qt::Dialog);
+    dialog->show();
+
+    connect(dialog, &CreateNewKubeConfigDialog::createFile, this, [=](QString filepath)
+            {
+        qDebug() << "Creating new config file:" << filepath;
+        KubeConfig *newConfig = KubeParser::createEmptyConfig();        
+        QString kubeDump = KubeParser::dumpConfig(newConfig);
+        qDebug() << "Config:" << kubeDump;
+        QFile newConfigFile(filepath);
+
+        if (!newConfigFile.open(QIODevice::ReadWrite | QIODevice::Text)){
+            //@todo show an error
+        }else{
+            newConfigFile.write(kubeDump.toUtf8());
+            this->onReloadTriggered();
+        }
+
+        dialog->hide();
+        delete dialog; });
 }
