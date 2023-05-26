@@ -4,3 +4,6 @@
 [submodule "lib/kubernetes"]
 	path = lib/kubernetes
 	url = https://github.com/kubernetes-client/c.git
+[submodule "assets/oxygen-icons"]
+	path = assets/oxygen-icons
+	url = https://github.com/KDE/oxygen-icons.git

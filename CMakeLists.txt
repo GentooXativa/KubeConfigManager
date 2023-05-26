@@ -50,6 +50,7 @@ set(PROJECT_SOURCES
     src/createnewkubeconfigdialog.h
     src/createnewkubeconfigdialog.cpp
     src/createnewkubeconfigdialog.ui
+    src/tint.h
     assets.qrc
     ${TS_FILES}
 )

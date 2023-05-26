@@ -386,82 +386,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1186</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuSystem">
-    <property name="title">
-     <string>System</string>
-    </property>
-    <addaction name="actionReload"/>
-    <addaction name="actionSettings"/>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <widget class="QMenu" name="menuUtils">
-    <property name="title">
-     <string>Utils</string>
-    </property>
-    <addaction name="actionNewKubeConfigFile"/>
-    <addaction name="separator"/>
-    <addaction name="actionEditUsers"/>
-    <addaction name="actionEditClusters"/>
-    <addaction name="separator"/>
-    <addaction name="actionSwitchContext"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionAbout"/>
-   </widget>
-   <widget class="QMenu" name="menuDeveloper">
-    <property name="title">
-     <string>Developer</string>
-    </property>
-    <widget class="QMenu" name="menuSwitch_stacked_widget_page">
-     <property name="title">
-      <string>Switch stacked widget page</string>
-     </property>
-     <addaction name="actionStackedWidgetHome"/>
-     <addaction name="actionStackedWidgetMerger"/>
-     <addaction name="actionStackedWidgetConfig"/>
-    </widget>
-    <addaction name="menuSwitch_stacked_widget_page"/>
-   </widget>
-   <addaction name="menuSystem"/>
-   <addaction name="menuUtils"/>
-   <addaction name="menuHelp"/>
-   <addaction name="menuDeveloper"/>
-  </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionReload"/>
-   <addaction name="actionNewKubeConfigFile"/>
-   <addaction name="separator"/>
-   <addaction name="actionEditUsers"/>
-   <addaction name="actionEditClusters"/>
-   <addaction name="separator"/>
-   <addaction name="actionSettings"/>
-   <addaction name="separator"/>
-   <addaction name="actionToggleFilesPanel"/>
-   <addaction name="actionQuit"/>
-  </widget>
   <widget class="QDockWidget" name="dockWidgetConfigurationFiles">
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
@@ -552,17 +477,6 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="toolBar_2">
-   <property name="windowTitle">
-    <string>toolBar_2</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <action name="actionSettings">
    <property name="icon">

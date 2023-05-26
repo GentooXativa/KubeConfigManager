@@ -22,6 +22,12 @@ MainWindow::MainWindow(QWidget *parent)
     appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
 
     ui->setupUi(this);
+
+    this->createActions();
+
+    this->initializeMenus();
+    this->initializeToolbars();
+
     this->initializeApp();
 
     connect(ui->pushButtonMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
@@ -30,13 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
 
     connect(ui->actionReload, &QAction::triggered, this, &MainWindow::onReloadTriggered);
-
-    connect(ui->actionStackedWidgetHome, &QAction::triggered, this, [=]()
-            { ui->stackedWidget->setCurrentIndex(0); });
-    connect(ui->actionStackedWidgetConfig, &QAction::triggered, this, [=]()
-            { ui->stackedWidget->setCurrentIndex(1); });
-    connect(ui->actionStackedWidgetMerger, &QAction::triggered, this, [=]()
-            { ui->stackedWidget->setCurrentIndex(2); });
 
     uiHasBeenInitialized = true;
 }
@@ -84,7 +83,83 @@ void MainWindow::initializeApp()
     }
 }
 
-void MainWindow::on_actionQuit_triggered()
+void MainWindow::initializeToolbars()
+{
+    mainToolbar = new QToolBar(tr("Main toolbar"), this);
+    mainToolbar->setAllowedAreas(Qt::TopToolBarArea);
+
+    mainToolbar->addAction(actionNewKubeConfig);
+    mainToolbar->addSeparator();
+    mainToolbar->addAction(actionShowSettingsDialog);
+    mainToolbar->addAction(actionQuitApp);
+
+    this->addToolBar(mainToolbar);
+
+#ifdef QT_DEBUG
+    devToolbar = new QToolBar(tr("Developer toolbar"), this);
+    devToolbar->addAction(actionDevGoToHome);
+    devToolbar->addAction(actionDevGoToMerge);
+    this->addToolBar(Qt::BottomToolBarArea, devToolbar);
+#endif
+}
+
+void MainWindow::initializeMenus()
+{
+    fileMenu = this->menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(this->actionNewKubeConfig);
+    fileMenu->addSeparator();
+    fileMenu->addAction(actionShowSettingsDialog);
+    fileMenu->addAction(actionQuitApp);
+
+#ifdef QT_DEBUG
+    devMenu = this->menuBar()->addMenu(tr("&Developer"));
+    devMenu->addAction(this->actionDevGoToHome);
+    devMenu->addAction(this->actionDevGoToMerge);
+#endif
+}
+
+void MainWindow::createActions()
+{
+    const QIcon iconNewKubeConfig = QIcon::fromTheme("document-new", QIcon(":/icons/document-new"));
+    const QIcon iconQuit = QIcon::fromTheme("process-stop", QIcon(":/icons/process-stop"));
+    const QIcon iconSettings = QIcon::fromTheme("configure", QIcon(":/icons/configure"));
+    const QIcon iconGoHome = QIcon::fromTheme("go-home", QIcon(":/icons/go-home"));
+    const QIcon iconMerge = QIcon::fromTheme("edit-copy", QIcon(":/icons/edit-copy"));
+
+    QIcon iconMergeDev(QPixmap::fromImage(tintImage(QImage("://icons/edit-copy"), QColor(255, 0, 0), 1.0)));
+    QIcon iconGoHomeDev(QPixmap::fromImage(tintImage(QImage("://icons/go-home"), QColor(255, 0, 0), 1.0)));
+
+    actionNewKubeConfig = new QAction(iconNewKubeConfig, tr("&New KubeConfig file..."), this);
+    actionNewKubeConfig->setShortcuts(QKeySequence::New);
+    actionNewKubeConfig->setStatusTip(tr("Create a new config file"));
+    connect(actionNewKubeConfig, &QAction::triggered, this, &MainWindow::onNewKubeConfigFile);
+
+    actionQuitApp = new QAction(iconQuit, tr("&Quit..."), this);
+    actionQuitApp->setShortcuts(QKeySequence::Quit);
+    actionQuitApp->setStatusTip(tr("Close this application and exit"));
+    connect(actionQuitApp, &QAction::triggered, this, &MainWindow::exitApplication);
+
+    actionShowSettingsDialog = new QAction(iconSettings, tr("&Preferences..."), this);
+    actionShowSettingsDialog->setShortcuts(QKeySequence::Preferences);
+    actionShowSettingsDialog->setStatusTip(tr("Setup application preferences and settings"));
+    connect(actionShowSettingsDialog, &QAction::triggered, this, &MainWindow::showSettingsDialog);
+
+#ifdef QT_DEBUG
+    actionDevGoToHome = new QAction(iconGoHomeDev, tr("Stacked widget: home"), this);
+    actionDevGoToHome->setStatusTip(tr("Make central widget stack go to home page"));
+
+    connect(actionDevGoToHome, &QAction::triggered, this, [=]()
+            { ui->stackedWidget->setCurrentIndex(0); });
+
+    actionDevGoToMerge = new QAction(iconMergeDev, tr("Stacked widget: Merge"), this);
+    actionDevGoToMerge->setStatusTip(tr("Make central widget stack go to merge page"));
+
+    connect(actionDevGoToMerge, &QAction::triggered, this, [=]()
+            { ui->stackedWidget->setCurrentIndex(2); });
+#endif
+}
+
+void MainWindow::exitApplication()
 {
     this->close();
     qApp->quit();
@@ -139,7 +214,7 @@ void MainWindow::loadSettings()
     if (keys.length() == 0)
     {
         QMessageBox::information(this, tr("Configuration not found"), tr("Looks like this is the first time you use this application, please check this settings and have fun!"));
-        this->on_actionSettings_triggered();
+        this->showSettingsDialog();
         return;
     }
 
@@ -227,7 +302,7 @@ void MainWindow::errorLoadingFileParser(const QString message)
     QMessageBox::critical(this, "Error parsing file", message);
 }
 
-void MainWindow::on_actionSettings_triggered()
+void MainWindow::showSettingsDialog()
 {
     SettingsForm *settings = new SettingsForm(appSettings, this);
     settings->setModal(true);
@@ -258,7 +333,7 @@ bool MainWindow::checkResourcesAndDirectories()
     if (!workingDirectory.exists() || !workingDirectory.isReadable())
     {
         QMessageBox::critical(this, tr("Error accessing kube directory"), QString(tr("Please check if %1 exists and you have read/write access.")).arg(this->workingDirectory));
-        this->on_actionQuit_triggered();
+        this->exitApplication();
         return false;
     }
 

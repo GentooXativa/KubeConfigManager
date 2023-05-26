@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QToolBar>
 #include <QMainWindow>
 #include <QSettings>
 #include <QMimeData>
 #include <QDebug>
 #include <QStringListModel>
 #include <QMenu>
+#include <QMenuBar>
 #include <QSystemTrayIcon>
 #include <QIcon>
 #include <QWindow>
@@ -19,6 +21,7 @@
 #include "kubeconfigmerger.h"
 #include "contextswitcher.h"
 #include "createnewkubeconfigdialog.h"
+#include "tint.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -42,7 +45,7 @@ protected:
     //    void dragLeaveEvent(QDragLeaveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 private slots:
-    void on_actionQuit_triggered();
+    void exitApplication();
     void on_toolButtonWorkingDirectory_clicked();
     void on_listViewFiles_activated(const QModelIndex &index);
 
@@ -51,7 +54,6 @@ private slots:
     void contextModelUpdated(const QStringList contexts);
     void kubeConfigUpdated(KubeConfig *kConfig);
 
-    void on_actionSettings_triggered();
     void loadSettings();
     void clearView();
     void initializeApp();
@@ -80,6 +82,7 @@ private slots:
     void onMergeFilesAction();
     void onNewKubeConfigFile();
     void onReloadTriggered();
+    void showSettingsDialog();
 signals:
     void contextHasBeenSelected();
     void closeContextSwitcher();
@@ -87,18 +90,40 @@ signals:
 private:
     void setWorkingDirectory(QString, bool);
     bool checkResourcesAndDirectories();
-    void createTrayIcon();
 
+    void createTrayIcon();
+    void createActions();
+
+    void initializeToolbars();
+    void initializeMenus();
+
+    // ui
     Ui::MainWindow *ui;
     bool uiHasBeenInitialized;
-    QSettings *appSettings;
 
+    // menus
+    QMenu *fileMenu;
+
+    // actions
+    QAction *actionNewKubeConfig;
+    QAction *actionQuitApp;
+    QAction *actionShowSettingsDialog;
+
+    // toolbaes
+    QToolBar *mainToolbar;
+    QToolBar *contextToolbar;
+
+    // settings
+    QSettings *appSettings;
     QString workingDirectory;
     QString disabledDirectory;
     QString backupDirectory;
     QString devChangesDirectory;
 
+    // Models
     QStringListModel *contextsModel;
+
+    // System tray
     QMenu *systemTrayMenu;
     QSystemTrayIcon *systemTrayIcon;
     QIcon *appIcon;
@@ -109,5 +134,17 @@ private:
     KubeConfigUtils *kubeUtils;
 
     bool showFilesPanel;
+
+    /**
+     * developer stuff
+     */
+#ifdef QT_DEBUG
+    QToolBar *devToolbar;
+    QMenu *devMenu;
+
+    QAction *actionDevGoToHome;
+    QAction *actionDevGoToMerge;
+
+#endif
 };
 #endif // MAINWINDOW_H

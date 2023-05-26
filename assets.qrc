@@ -2,4 +2,11 @@
     <qresource prefix="/logo">
         <file>assets/logo.png</file>
     </qresource>
+    <qresource prefix="/icons">
+        <file alias="document-new">assets/oxygen-icons/scalable/actions/document-new.svgz</file>
+        <file alias="process-stop">assets/oxygen-icons/scalable/actions/process-stop.svgz</file>
+        <file alias="go-home">assets/oxygen-icons/scalable/actions/go-home.svgz</file>
+        <file alias="edit-copy">assets/oxygen-icons/scalable/actions/edit-copy.svgz</file>
+        <file alias="configure">assets/oxygen-icons/scalable/actions/configure.svgz</file>
+    </qresource>
 </RCC>
