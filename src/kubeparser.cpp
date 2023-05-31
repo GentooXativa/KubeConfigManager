@@ -9,16 +9,26 @@
 KubeParser::KubeParser(QString path, QObject *parent) : QObject(parent)
 {
     this->path = path;
+
+    this->contexts = new KubeContextList();
+    this->clusters = new KubeClusterList();
+    this->users = new KubeUserList();
+    this->kubeConfig = new KubeConfig();
+
     qDebug() << "Initializing parser for file:" << path;
+}
+
+KubeParser::~KubeParser()
+{
+    delete this->contexts;
+    delete this->clusters;
+    delete this->users;
+    delete this->kubeConfig;
 }
 
 void KubeParser::load()
 {
     QFile file(path);
-
-    QStringList clusters;
-    QStringList contexts;
-    QStringList users;
 
     this->kubeConfig = new KubeConfig();
     this->kubeConfig->originalFilePath = &path;
@@ -47,7 +57,6 @@ void KubeParser::load()
         for (const auto &cluster : config["clusters"])
         {
             qDebug() << "Cluster found  :" << cluster["name"].as<std::string>().c_str();
-            clusters.append(QString::fromStdString(cluster["name"].as<std::string>()));
 
             KubeCluster clusterObj;
 
@@ -101,7 +110,6 @@ void KubeParser::load()
             KubeUser userObj;
             qDebug() << "User found:" << user["name"].as<std::string>().c_str();
             userObj.name = QString::fromStdString(user["name"].as<std::string>());
-            users.append(userObj.name);
 
             if (!user["user"])
             {
@@ -238,7 +246,6 @@ void KubeParser::load()
         for (const auto &context : config["contexts"])
         {
             qDebug() << "Context found:" << context["name"].as<std::string>().c_str();
-            contexts.append(QString::fromStdString(context["name"].as<std::string>()));
 
             KubeContext contextObj;
             contextObj.name = QString::fromStdString(context["name"].as<std::string>().c_str());

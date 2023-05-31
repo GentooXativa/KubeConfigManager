@@ -97,4 +97,6 @@ struct KubeConfig
     QString *originalFilePath;
 };
 
+#define kTrace qDebug() << ">> [TRACE]" << __PRETTY_FUNCTION__
+
 #endif // KUBECONFMANAGER_H

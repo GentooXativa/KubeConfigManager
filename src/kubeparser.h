@@ -12,6 +12,7 @@ class KubeParser : public QObject
     Q_OBJECT
 public:
     explicit KubeParser(QString path, QObject *parent = nullptr);
+    ~KubeParser();
 
     void load();
     bool save();

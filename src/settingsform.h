@@ -2,6 +2,7 @@
 #define SETTINGSFORM_H
 
 #include <QDialog>
+#include <QLineEdit>
 #include <QSettings>
 
 namespace Ui
@@ -21,19 +22,10 @@ signals:
     void settingsUpdated();
 
 private slots:
-    void on_buttonBox_accepted();
-
-    void on_buttonBox_rejected();
-
-    void on_toolButtonWorkingDirectory_triggered(QAction *arg1);
-
-    void on_toolButtonDisabledFolderPath_triggered(QAction *arg1);
-
-    void on_pushButtonKubeCtlCheck_clicked();
-
-    void on_checkBoxStartHidden_toggled(bool checked);
-
-    void on_checkBoxStartMinimized_toggled(bool checked);
+    void onSaveConfig();
+    void onReject();
+    void onTryToFindKubectl();
+    void onSearchFolder(QLineEdit *target);
 
 private:
     void updateUI();

@@ -1,7 +1,7 @@
 #ifndef CONTEXTEDITOR_H
 #define CONTEXTEDITOR_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QStringListModel>
 
 #include "KubeConfManager.h"
@@ -12,7 +12,7 @@ namespace Ui
     class ContextEditor;
 }
 
-class ContextEditor : public QWidget
+class ContextEditor : public QDialog
 {
     Q_OBJECT
 

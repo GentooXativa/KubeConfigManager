@@ -9,7 +9,11 @@ class KubeConfigUtils : public QObject
 {
     Q_OBJECT
 public:
+    KubeConfigUtils(){};
     explicit KubeConfigUtils(KubeConfig *kConfig, QObject *parent = nullptr);
+
+    KubeConfigUtils &operator=(const KubeConfigUtils &other);
+
     QString getCurrentContext();
 
     KubeContext *getContextByName(QString name);

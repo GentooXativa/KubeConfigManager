@@ -119,8 +119,8 @@
        <property name="title">
         <string>Behaviour</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
          <widget class="QCheckBox" name="checkBoxBackupConfig">
           <property name="text">
            <string>Backup configuration before save</string>
@@ -130,7 +130,7 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item row="1" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <widget class="QLabel" name="labelConfigBackupDirectory">
@@ -140,11 +140,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineConfigBackupDirectory">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <widget class="QLineEdit" name="lineConfigBackupDirectory"/>
           </item>
           <item>
            <widget class="QToolButton" name="toolButtonConfigBackupDirectory">
@@ -159,7 +155,21 @@
           </item>
          </layout>
         </item>
-        <item>
+        <item row="2" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QLabel" name="labelConfigBackupHistorySize">
+            <property name="text">
+             <string>Backups to keep:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBoxConfigBackupHistorySize"/>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

@@ -2,7 +2,7 @@
 #include "contexteditor.h"
 #include "ui_contexteditor.h"
 
-ContextEditor::ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget *parent) : QWidget(parent),
+ContextEditor::ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget *parent) : QDialog(parent),
                                                                                            ui(new Ui::ContextEditor)
 {
     this->context = context;

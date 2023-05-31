@@ -32,11 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButtonMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
     connect(ui->pushButtonHomeMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
-
     connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
-
     connect(ui->actionReload, &QAction::triggered, this, &MainWindow::onReloadTriggered);
-
+    connect(ui->listViewContexts, &QListView::doubleClicked, this, &MainWindow::onEditContext);
     uiHasBeenInitialized = true;
 }
 
@@ -47,6 +45,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeApp()
 {
+    kTrace;
+
     this->showFilesPanel = true;
 
     contextsModel = new QStringListModel(this);
@@ -64,6 +64,8 @@ void MainWindow::initializeApp()
 
     this->on_actionToggleFilesPanel_toggled(this->showFilesPanel);
     this->ui->actionToggleFilesPanel->setChecked(this->showFilesPanel);
+
+    this->ui->groupBoxSelectedContext->setVisible(false);
 
     this->createTrayIcon();
 
@@ -85,6 +87,8 @@ void MainWindow::initializeApp()
 
 void MainWindow::initializeToolbars()
 {
+    kTrace;
+
     mainToolbar = new QToolBar(tr("Main toolbar"), this);
     mainToolbar->setAllowedAreas(Qt::TopToolBarArea);
 
@@ -105,6 +109,8 @@ void MainWindow::initializeToolbars()
 
 void MainWindow::initializeMenus()
 {
+    kTrace;
+
     fileMenu = this->menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(this->actionNewKubeConfig);
     fileMenu->addSeparator();
@@ -120,6 +126,7 @@ void MainWindow::initializeMenus()
 
 void MainWindow::createActions()
 {
+    kTrace;
     const QIcon iconNewKubeConfig = QIcon::fromTheme("document-new", QIcon(":/icons/document-new"));
     const QIcon iconQuit = QIcon::fromTheme("process-stop", QIcon(":/icons/process-stop"));
     const QIcon iconSettings = QIcon::fromTheme("configure", QIcon(":/icons/configure"));
@@ -161,38 +168,15 @@ void MainWindow::createActions()
 
 void MainWindow::exitApplication()
 {
+    kTrace;
     this->close();
     qApp->quit();
 }
 
-void MainWindow::on_toolButtonWorkingDirectory_clicked()
-{
-    QString initialDirectory = QDir::homePath();
-    initialDirectory.append("/.kube");
-
-    QDir kubedir = QDir(initialDirectory);
-
-    if (!kubedir.exists())
-    {
-        initialDirectory = QDir::homePath();
-    }
-
-    QFileDialog *directorySelector = new QFileDialog(this, "Please select your .kube directory", initialDirectory);
-    directorySelector->setFileMode(QFileDialog::Directory);
-    directorySelector->setViewMode(QFileDialog::List);
-    directorySelector->setOption(QFileDialog::ShowDirsOnly, true);
-
-    if (directorySelector->exec())
-    {
-        QStringList selected = directorySelector->selectedFiles();
-        setWorkingDirectory(selected.at(0), true);
-    }
-
-    return;
-}
-
 void MainWindow::onReloadTriggered()
 {
+    kTrace;
+
     if (workingDirectory.isEmpty())
     {
         QMessageBox::critical(this, "Error", "You need to select a working directory first!");
@@ -208,6 +192,7 @@ void MainWindow::onReloadTriggered()
 
 void MainWindow::loadSettings()
 {
+    kTrace;
     QStringList keys = appSettings->allKeys();
     qDebug() << "Keys found in config:" << keys.length();
 
@@ -231,6 +216,7 @@ void MainWindow::loadSettings()
 
 void MainWindow::setWorkingDirectory(QString path, bool updateSettings = true)
 {
+    kTrace;
     workingDirectory = path;
     qDebug() << "Working directory set to:" << path;
 
@@ -248,6 +234,7 @@ void MainWindow::setWorkingDirectory(QString path, bool updateSettings = true)
 
 void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
 {
+    kTrace;
     qDebug() << "Activated on:" << index.data().toString();
     qDebug() << "Current selection count:" << ui->listViewFiles->selectionModel()->selectedIndexes().size();
 
@@ -294,16 +281,19 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
 
 void MainWindow::contextModelUpdated(const QStringList contexts)
 {
+    kTrace;
     contextsModel->setStringList(contexts);
 }
 
 void MainWindow::errorLoadingFileParser(const QString message)
 {
+    kTrace;
     QMessageBox::critical(this, "Error parsing file", message);
 }
 
 void MainWindow::showSettingsDialog()
 {
+    kTrace;
     SettingsForm *settings = new SettingsForm(appSettings, this);
     settings->setModal(true);
     settings->show();
@@ -313,13 +303,11 @@ void MainWindow::showSettingsDialog()
 
 void MainWindow::clearView()
 {
+    kTrace;
     this->loadSettings();
     this->checkResourcesAndDirectories();
 
     contextsModel->setStringList(QStringList());
-
-    this->ui->actionEditClusters->setEnabled(false);
-    this->ui->actionEditUsers->setEnabled(false);
 
     ui->textEditContextInformation->setMarkdown(
         QString("# Welcome to %1 v%2\n\n---\n* This section is a work in progress...\n\n\n ![Test](https://www.one-beyond.com/wpcms/wp-content/themes/dcsl/assets/images/logo-animated.gif)")
@@ -328,9 +316,10 @@ void MainWindow::clearView()
 
 bool MainWindow::checkResourcesAndDirectories()
 {
-    QDir workingDirectory(this->workingDirectory);
+    kTrace;
+    QDir workingDirectoryDir(this->workingDirectory);
 
-    if (!workingDirectory.exists() || !workingDirectory.isReadable())
+    if (!workingDirectoryDir.exists() || !workingDirectoryDir.isReadable())
     {
         QMessageBox::critical(this, tr("Error accessing kube directory"), QString(tr("Please check if %1 exists and you have read/write access.")).arg(this->workingDirectory));
         this->exitApplication();
@@ -340,17 +329,17 @@ bool MainWindow::checkResourcesAndDirectories()
     if (this->appSettings->contains("paths/disabled_directory"))
     {
         QString disabledDirectoryPath = this->appSettings->value("paths/disabled_directory").toString();
-        QDir disabledDirectory(disabledDirectoryPath);
+        QDir disabledDirectoryDir(disabledDirectoryPath);
 
-        if (!disabledDirectory.exists())
+        if (!disabledDirectoryDir.exists())
         {
-            QMessageBox msg_box(QMessageBox::Question, tr("Do you want to create this directory?"), QString(tr("Do you want to create this directory to store disabled configurations?\n\n%1")).arg(disabledDirectory.absolutePath()),
+            QMessageBox msg_box(QMessageBox::Question, tr("Do you want to create this directory?"), QString(tr("Do you want to create this directory to store disabled configurations?\n\n%1")).arg(disabledDirectoryDir.absolutePath()),
                                 QMessageBox::Yes | QMessageBox::No);
             msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
             msg_box.setButtonText(QMessageBox::No, tr("No, disable this feature"));
             if (msg_box.exec() == QMessageBox::Yes)
             {
-                if (!disabledDirectory.mkpath(disabledDirectoryPath))
+                if (!disabledDirectoryDir.mkpath(disabledDirectoryPath))
                 {
                     QMessageBox::critical(this, tr("Error creating disabled folder"), QString(tr("Unable to create %1, please check that you has permissions to create it and try again.")).arg(disabledDirectoryPath));
                     return false;
@@ -363,11 +352,41 @@ bool MainWindow::checkResourcesAndDirectories()
             }
         }
     }
+
+    if (this->appSettings->contains("paths/backup") && this->appSettings->contains("backup/configuration") && this->appSettings->value("backup/configuration").toBool())
+    {
+        QString backupDirectoryPath = this->appSettings->value("paths/backup").toString();
+        QDir backupDirectoryDir(backupDirectoryPath);
+
+        if (!backupDirectoryDir.exists())
+        {
+            QMessageBox msg_box(QMessageBox::Question, tr("Do you want to create this directory?"), QString(tr("Do you want to create this directory to store backups?\n\n%1")).arg(backupDirectoryDir.absolutePath()),
+                                QMessageBox::Yes | QMessageBox::No);
+            msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
+            msg_box.setButtonText(QMessageBox::No, tr("No, disable this feature"));
+            if (msg_box.exec() == QMessageBox::Yes)
+            {
+                if (!backupDirectoryDir.mkpath(backupDirectoryPath))
+                {
+                    QMessageBox::critical(this, tr("Error creating disabled folder"), QString(tr("Unable to create %1, please check that you has permissions to create it and try again.")).arg(backupDirectoryPath));
+                    return false;
+                }
+            }
+            else
+            {
+                this->appSettings->remove("paths/backup");
+                this->appSettings->setValue("backup/configuration", false);
+                this->appSettings->sync();
+            }
+        }
+    }
+
     return true;
 }
 
 void MainWindow::createTrayIcon()
 {
+    kTrace;
     systemTrayMenu = new QMenu(this);
     systemTrayMenu->addAction(ui->actionSwitchContext);
     systemTrayMenu->addSeparator();
@@ -384,6 +403,7 @@ void MainWindow::createTrayIcon()
 
 void MainWindow::on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason)
 {
+    kTrace;
     switch (reason)
     {
     case QSystemTrayIcon::DoubleClick:
@@ -422,6 +442,7 @@ void MainWindow::on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::on_actionSwitchContext_triggered()
 {
+    kTrace;
     ContextSwitcher *switcher = new ContextSwitcher(this->kubeConfig, this->systemTrayIcon);
     switcher->setWindowFlags(Qt::Tool | Qt::Dialog);
     switcher->show();
@@ -431,11 +452,15 @@ void MainWindow::on_actionSwitchContext_triggered()
 
 void MainWindow::reloadDefaultConfiguration()
 {
+    kTrace;
 }
 
 void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
+    kTrace;
     qDebug() << "Context activated:" << index.data().toString();
+    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
+    // this->ui->groupBoxSelectedContext->setVisible(true);
     //    qDebug() << "Contexts loaded:" << this->contexts->size();
     //    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
     //    {
@@ -451,38 +476,46 @@ void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 
 void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
 {
+    kTrace;
     qDebug() << "KubeConfig has been updated";
     this->kubeConfig = kConfig;
-    this->kubeUtils = new KubeConfigUtils(this->kubeConfig, this);
 
-    // KubeContext *test = this->kubeUtils->getContextByName(this->kubeUtils->getCurrentContext());
-    // qDebug() << "\tSelected context:" << test->name;
+    qDebug() << "[D] Contexts:" << kConfig->contexts->size();
+    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
 
-    this->ui->actionEditClusters->setEnabled(true);
-    this->ui->actionEditUsers->setEnabled(true);
+    KubeConfigUtils kubeUtils(this->kubeConfig, this);
 
-    QStringList contextModel = this->kubeUtils->getContextsStringList();
+    QStringList contextModel = kubeUtils.getContextsStringList();
     this->contextModelUpdated(contextModel);
 
 #ifdef QT_DEBUG
-    QString test2(KubeParser::dumpConfig(this->kubeConfig));
-    QFile file("/tmp/current-kubeconfig-tmp.yaml");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
+    if (appSettings->contains("dev/save_all_changes") && appSettings->value("dev/save_all_changes").toBool())
+    {
+        QString filepath("/tmp/current-kubeconfig-tmp.yaml");
+        QString test2(KubeParser::dumpConfig(this->kubeConfig));
+        QFile file(filepath);
 
-    QTextStream out(&file);
-    out << test2;
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            return;
+
+        QTextStream out(&file);
+        out << test2;
+
+        qDebug() << "[DEV] Current kubeconfig stored at:" << filepath;
+    }
 #endif
+    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
 }
 
 void MainWindow::onContextSelected()
 {
+    kTrace;
     qDebug() << "New context selected:" << this->selectedContext.name;
-    this->updateContextInformationText();
 }
 
 void MainWindow::updateContextInformationText()
 {
+    kTrace;
     QString text(QString("Cluster %1\n    User: %2\n").arg(this->selectedContext.name, this->selectedContext.name));
     ui->textEditContextInformation->setMarkdown(text);
     ui->lineEditContextName->setText(this->selectedContext.name);
@@ -490,6 +523,7 @@ void MainWindow::updateContextInformationText()
 
 void MainWindow::on_actionEditClusters_triggered()
 {
+    kTrace;
     ClusterEditor *editorWidget = new ClusterEditor(this->kubeConfig, this);
     editorWidget->setWindowFlags(Qt::Tool | Qt::Dialog);
     editorWidget->show();
@@ -497,14 +531,17 @@ void MainWindow::on_actionEditClusters_triggered()
 
 void MainWindow::on_actionEditUsers_triggered()
 {
+    kTrace;
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
+    kTrace;
 }
 
 void MainWindow::on_actionNew_KubeConfig_file_triggered()
 {
+    kTrace;
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -528,6 +565,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
 {
+    kTrace;
     if (showPanel)
     {
         this->ui->dockWidgetConfigurationFiles->show();
@@ -538,15 +576,9 @@ void MainWindow::on_actionToggleFilesPanel_toggled(bool showPanel)
     }
 }
 
-void MainWindow::on_listViewContexts_doubleClicked(const QModelIndex &index)
-{
-    ContextEditor *editor = new ContextEditor(this->kubeUtils->getContextByName(index.data().toString()), this->kubeConfig, this);
-    editor->setWindowFlags(Qt::Tool | Qt::Dialog);
-    editor->show();
-}
-
 void MainWindow::dropEvent(QDropEvent *event)
 {
+    kTrace;
     event->acceptProposedAction();
 
     qDebug() << "Drop Event received: " << event->mimeData()->formats().join(",");
@@ -555,6 +587,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
+    kTrace;
     if (event->mimeData()->hasFormat("text/plain"))
         event->acceptProposedAction();
 
@@ -569,6 +602,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 void MainWindow::onMergeFilesAction()
 {
+    kTrace;
     KubeConfigMerger *mergerWidget = new KubeConfigMerger(ui->stackedWidget);
     ui->stackedWidget->setCurrentIndex(2);
     ui->stackedWidget->setCurrentWidget(mergerWidget);
@@ -576,6 +610,7 @@ void MainWindow::onMergeFilesAction()
 
 void MainWindow::onNewKubeConfigFile()
 {
+    kTrace;
     QFile defaultConfig(QString("%1/config").arg(this->workingDirectory));
     CreateNewKubeConfigDialog *dialog = new CreateNewKubeConfigDialog(this->workingDirectory, defaultConfig.exists(), this);
     dialog->setWindowFlags(Qt::Tool | Qt::Dialog);
@@ -593,9 +628,23 @@ void MainWindow::onNewKubeConfigFile()
             //@todo show an error
         }else{
             newConfigFile.write(kubeDump.toUtf8());
+            newConfigFile.setPermissions(QFileDevice::ReadUser | QFileDevice::WriteUser );
             this->onReloadTriggered();
         }
 
         dialog->hide();
         delete dialog; });
+}
+
+void MainWindow::onEditContext(const QModelIndex &index)
+{
+    kTrace;
+    qDebug() << "Context to edit:" << index.data().toString();
+
+    qDebug() << "Contexts:" << this->kubeConfig->contexts->size();
+    KubeConfigUtils kubeUtils(this->kubeConfig, this);
+    auto *context = kubeUtils.getContextByName(index.data().toString());
+
+    qDebug() << context->name;
+    // ContextEditor *contextEditor = new ContextEditor(this);
 }

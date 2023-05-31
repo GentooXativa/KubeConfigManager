@@ -46,7 +46,6 @@ protected:
     void dropEvent(QDropEvent *event) override;
 private slots:
     void exitApplication();
-    void on_toolButtonWorkingDirectory_clicked();
     void on_listViewFiles_activated(const QModelIndex &index);
 
     void errorLoadingFileParser(const QString message);
@@ -77,12 +76,11 @@ private slots:
 
     void on_actionToggleFilesPanel_toggled(bool arg1);
 
-    void on_listViewContexts_doubleClicked(const QModelIndex &index);
-
     void onMergeFilesAction();
     void onNewKubeConfigFile();
     void onReloadTriggered();
     void showSettingsDialog();
+    void onEditContext(const QModelIndex &index);
 signals:
     void contextHasBeenSelected();
     void closeContextSwitcher();
@@ -131,7 +129,6 @@ private:
     KubeContextList *contexts;
     KubeContext selectedContext;
     KubeConfig *kubeConfig;
-    KubeConfigUtils *kubeUtils;
 
     bool showFilesPanel;
 
