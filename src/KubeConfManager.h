@@ -83,18 +83,14 @@ struct KubeContext
     QList<KubeConfigExtension> extensions;
 };
 
-typedef QList<KubeContext> KubeContextList;
-typedef QList<KubeCluster> KubeClusterList;
-typedef QList<KubeUser> KubeUserList;
+typedef QMap<QString, KubeContext> KubeContextMap;
+typedef QMap<QString, KubeCluster> KubeClusterMap;
+typedef QMap<QString, KubeUser> KubeUserMap;
 
-struct KubeConfig
-{
-    KubeClusterList *clusters;
-    KubeUserList *users;
-    KubeContextList *contexts;
-    QString currentContext;
-    QVariant *preferences;
-    QString *originalFilePath;
-};
+#ifdef KCM_TRACE_FUNCTIONS
+#define kTrace qDebug() << "[\x1b[33;1m*\x1b[0m]" << __PRETTY_FUNCTION__
+#else
+#define kTrace void();
+#endif
 
 #endif // KUBECONFMANAGER_H

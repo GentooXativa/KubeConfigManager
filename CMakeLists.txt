@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Core LinguistTools REQUIRED)
@@ -51,6 +51,8 @@ set(PROJECT_SOURCES
     src/createnewkubeconfigdialog.cpp
     src/createnewkubeconfigdialog.ui
     src/tint.h
+    src/kubeconfig.h
+    src/kubeconfig.cpp
     assets.qrc
     ${TS_FILES}
 )

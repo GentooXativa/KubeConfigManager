@@ -8,26 +8,21 @@ KubeConfigUtils::KubeConfigUtils(KubeConfig *kConfig, QObject *parent) : QObject
 
 QString KubeConfigUtils::getCurrentContext()
 {
-    return this->kubeConfig->currentContext;
+    return this->kubeConfig->currentContext();
 }
 
 KubeContext *KubeConfigUtils::getContextByName(QString name)
 {
-    for (QList<KubeContext>::iterator it = this->kubeConfig->contexts->begin(); it != this->kubeConfig->contexts->end(); ++it)
-    {
-        KubeContext current = *it;
-        if (name == current.name)
-        {
-            return new KubeContext(current);
-        }
-    }
+    auto it = std::find_if(this->kubeConfig->contexts()->begin(), this->kubeConfig->contexts()->end(),
+                           [name](const KubeContext &context)
+                           { return context.name == name; });
 
-    return NULL;
+    return (it != this->kubeConfig->contexts()->end()) ? new KubeContext(*it) : new KubeContext();
 }
 
 KubeUser *KubeConfigUtils::getUserByName(QString name)
 {
-    for (QList<KubeUser>::iterator it = this->kubeConfig->users->begin(); it != this->kubeConfig->users->end(); ++it)
+    for (QMap<QString, KubeUser>::iterator it = this->kubeConfig->users()->begin(); it != this->kubeConfig->users()->end(); ++it)
     {
         KubeUser current = *it;
         if (name == current.name)
@@ -36,12 +31,27 @@ KubeUser *KubeConfigUtils::getUserByName(QString name)
         }
     }
 
-    return NULL;
+    return new KubeUser();
+}
+
+bool KubeConfigUtils::contextExist(const QString name)
+{
+    return this->kubeConfig->contexts()->find(name) != this->kubeConfig->contexts()->end();
+}
+
+bool KubeConfigUtils::clusterExist(const QString name)
+{
+    return this->kubeConfig->clusters()->find(name) != this->kubeConfig->clusters()->end();
+}
+
+bool KubeConfigUtils::userExist(const QString name)
+{
+    return this->kubeConfig->users()->find(name) != this->kubeConfig->users()->end();
 }
 
 KubeCluster *KubeConfigUtils::getClusterByName(QString name)
 {
-    for (QList<KubeCluster>::iterator it = this->kubeConfig->clusters->begin(); it != this->kubeConfig->clusters->end(); ++it)
+    for (QMap<QString, KubeCluster>::iterator it = this->kubeConfig->clusters()->begin(); it != this->kubeConfig->clusters()->end(); ++it)
     {
         KubeCluster current = *it;
         if (name == current.name)
@@ -50,16 +60,15 @@ KubeCluster *KubeConfigUtils::getClusterByName(QString name)
         }
     }
 
-    return NULL;
+    return new KubeCluster();
 }
 
 QStringList KubeConfigUtils::getClustersStringList()
 {
     QStringList list;
-    for (QList<KubeCluster>::iterator it = this->kubeConfig->clusters->begin(); it != this->kubeConfig->clusters->end(); ++it)
+    for (const auto &cluster : *this->kubeConfig->clusters())
     {
-        KubeCluster current = *it;
-        list.append(current.name);
+        list.append(cluster.name);
     }
 
     return list;
@@ -68,10 +77,9 @@ QStringList KubeConfigUtils::getClustersStringList()
 QStringList KubeConfigUtils::getContextsStringList()
 {
     QStringList list;
-    for (QList<KubeContext>::iterator it = this->kubeConfig->contexts->begin(); it != this->kubeConfig->contexts->end(); ++it)
+    for (const auto &context : *this->kubeConfig->contexts())
     {
-        KubeContext current = *it;
-        list.append(current.name);
+        list.append(context.name);
     }
 
     return list;
@@ -80,10 +88,9 @@ QStringList KubeConfigUtils::getContextsStringList()
 QStringList KubeConfigUtils::getUsersStringList()
 {
     QStringList list;
-    for (QList<KubeUser>::iterator it = this->kubeConfig->users->begin(); it != this->kubeConfig->users->end(); ++it)
+    for (const auto &user : *this->kubeConfig->users())
     {
-        KubeUser current = *it;
-        list.append(current.name);
+        list.append(user.name);
     }
 
     return list;
