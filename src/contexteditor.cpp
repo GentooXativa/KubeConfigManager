@@ -1,68 +1,120 @@
+#include <QCompleter>
+#include <QMessageBox>
+
 #include "kubeparser.h"
 #include "contexteditor.h"
 #include "ui_contexteditor.h"
 
-ContextEditor::ContextEditor(KubeContext *context, KubeConfig *kConfig, QWidget *parent) : QDialog(parent),
-                                                                                           ui(new Ui::ContextEditor)
+ContextEditor::ContextEditor(KubeContext *context, KubeConfig *kConfig, bool isNew, QWidget *parent) : QDialog(parent),
+                                                                                                       ui(new Ui::ContextEditor)
 {
     this->context = context;
     this->config = kConfig;
+    this->isNewContext = isNew;
 
     ui->setupUi(this);
 
+    this->setIconsAndActions();
+
     KubeConfigUtils utils(this->config, this);
 
-    this->ui->lineEditContextName->setText(this->context->name);
+    ui->lineEditContextName->setText(this->context->name);
 
     if (!this->context->clusterNamespace.isEmpty())
     {
-        this->ui->lineEditNamespace->setText(this->context->clusterNamespace);
+        ui->lineEditNamespace->setText(this->context->clusterNamespace);
     }
 
     QStringList clusterList = utils.getClustersStringList();
     QStringListModel *clusterModel = new QStringListModel(clusterList);
-    this->ui->comboBoxClusters->setModel(clusterModel);
+    ui->comboBoxClusters->setModel(clusterModel);
+
+    QCompleter *clusterCompleter = new QCompleter(clusterList, this);
+    ui->comboBoxClusters->setCompleter(clusterCompleter);
 
     QStringList userList = utils.getUsersStringList();
     QStringListModel *userModel = new QStringListModel(userList);
-    this->ui->comboBoxUsers->setModel(userModel);
+    ui->comboBoxUsers->setModel(userModel);
 
-    if (this->ui->comboBoxClusters->findText(this->context->cluster->name))
-        this->ui->comboBoxClusters->setCurrentIndex(this->ui->comboBoxClusters->findText(this->context->cluster->name));
+    QCompleter *userCompleter = new QCompleter(userList, this);
+    ui->comboBoxUsers->setCompleter(userCompleter);
 
-    if (this->ui->comboBoxUsers->findText(this->context->user->name))
-        this->ui->comboBoxUsers->setCurrentIndex(this->ui->comboBoxUsers->findText(this->context->user->name));
+    if (ui->comboBoxClusters->findText(this->context->cluster->name))
+        ui->comboBoxClusters->setCurrentIndex(ui->comboBoxClusters->findText(this->context->cluster->name));
 
-    connect(this->ui->lineEditContextName, &QLineEdit::textChanged, this, &ContextEditor::checkContextName);
+    if (ui->comboBoxUsers->findText(this->context->user->name))
+        ui->comboBoxUsers->setCurrentIndex(ui->comboBoxUsers->findText(this->context->user->name));
 }
 
 ContextEditor::~ContextEditor()
 {
-    delete ui;
-    delete this->context;
-    delete this->config;
 }
 
-void ContextEditor::on_pushButtonSave_clicked()
+void ContextEditor::onPushButtonSaveClicked()
 {
+    KubeConfigUtils utils(this->config, this);
+
+    if (utils.contextExist(ui->lineEditContextName->text()) && this->isNewContext)
+    {
+        QMessageBox::warning(this, tr("Context already exists"), tr("A context with the same name already exists, please use another name."));
+        return;
+    }
+
+    if (!utils.userExist(ui->comboBoxUsers->currentText()))
+    {
+        QMessageBox::warning(this, tr("User entry not found"), tr("User entry not found, please select one from the dropdown list."));
+        return;
+    }
+
+    if (!utils.clusterExist(ui->comboBoxClusters->currentText()))
+    {
+        QMessageBox::warning(this, tr("Cluster entry not found"), tr("Cluster entry not found, please select one from the dropdown list."));
+        return;
+    }
+
+    KubeContext editedContext;
+
+    editedContext.name = ui->lineEditContextName->text();
+    editedContext.clusterNamespace = ui->lineEditNamespace->text();
+
+    editedContext.cluster = utils.getClusterByName(ui->comboBoxClusters->currentText());
+    editedContext.user = utils.getUserByName(ui->comboBoxUsers->currentText());
+
+    emit contextSaved(&editedContext);
+    emit accepted();
+    this->close();
 }
 
-void ContextEditor::on_pushButtonCancel_clicked()
+void ContextEditor::onPushButtonCancelClicked()
 {
+    emit rejected();
     this->close();
 }
 
 void ContextEditor::checkContextName()
 {
-    if (this->ui->lineEditContextName->text().isEmpty())
+    if (ui->lineEditContextName->text().isEmpty())
     {
 
-        this->ui->labelContextName->setStyleSheet("color: #ff0000");
-        this->ui->lineEditContextName->setStyleSheet("border-color: #ff0000");
+        ui->labelContextName->setStyleSheet("color: #ff0000");
+        ui->lineEditContextName->setStyleSheet("border-color: #ff0000");
     }
     else
     {
-        this->ui->lineEditContextName->setStyleSheet("");
-        this->ui->labelContextName->setStyleSheet("");
+        ui->lineEditContextName->setStyleSheet("");
+        ui->labelContextName->setStyleSheet("");
     }
+}
+
+void ContextEditor::setIconsAndActions()
+{
+    const QIcon iconSave = QIcon::fromTheme("document-save", QIcon(":/icons/document-save"));
+    const QIcon iconCancel = QIcon::fromTheme("process-stop", QIcon(":/icons/process-stop"));
+
+    ui->pushButtonCancel->setIcon(iconCancel);
+    ui->pushButtonSave->setIcon(iconSave);
+
+    connect(ui->pushButtonCancel, &QPushButton::clicked, this, &ContextEditor::onPushButtonCancelClicked);
+    connect(ui->pushButtonSave, &QPushButton::clicked, this, &ContextEditor::onPushButtonSaveClicked);
+    connect(ui->lineEditContextName, &QLineEdit::textChanged, this, &ContextEditor::checkContextName);
 }

@@ -17,9 +17,9 @@ ContextSwitcher::ContextSwitcher(KubeConfig *config, QSystemTrayIcon *trayIcon, 
     QStringListModel *contextModel = new QStringListModel(kUtils.getContextsStringList());
     this->ui->listView->setModel(contextModel);
 
-    if (!config->currentContext.isEmpty() && !config->currentContext.isNull())
+    if (!config->currentContext().isEmpty() && !config->currentContext().isNull())
     {
-        int contextIndex = contextModel->stringList().indexOf(config->currentContext);
+        int contextIndex = contextModel->stringList().indexOf(config->currentContext());
         this->ui->listView->selectionModel()->select(contextModel->index(contextIndex), QItemSelectionModel::Select);
     }
 }

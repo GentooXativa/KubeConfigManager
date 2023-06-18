@@ -3,11 +3,18 @@
 #include <QCommandLineOption>
 #include <QTranslator>
 
+#ifdef QT_DEBUG
+#include <QDebug>
+#endif
+
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     // Q_INIT_RESOURCE(application);
+#ifdef QT_DEBUG
+    qDebug() << "Qt:" << QString("%1.%2-%3").arg(QT_VERSION_MAJOR).arg(QT_VERSION_MINOR).arg(QT_VERSION_PATCH);
+#endif
 
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName("GentooXativa");

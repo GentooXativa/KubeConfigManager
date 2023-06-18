@@ -16,18 +16,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     uiHasBeenInitialized = false;
     setAcceptDrops(true);
-
     qApp->installEventFilter(this);
-
     appSettings = new QSettings(QSettings::UserScope, "GentooXativa", "KubeConfManager", this);
-
     ui->setupUi(this);
 
     this->createActions();
-
     this->initializeMenus();
     this->initializeToolbars();
-
     this->initializeApp();
 
     connect(ui->pushButtonMergeFiles, &QPushButton::clicked, this, &MainWindow::onMergeFilesAction);
@@ -35,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::contextHasBeenSelected, this, &MainWindow::onContextSelected);
     connect(ui->actionReload, &QAction::triggered, this, &MainWindow::onReloadTriggered);
     connect(ui->listViewContexts, &QListView::doubleClicked, this, &MainWindow::onEditContext);
+
     uiHasBeenInitialized = true;
 }
 
@@ -48,6 +44,9 @@ void MainWindow::initializeApp()
     kTrace;
 
     this->showFilesPanel = true;
+    this->contextHasBeenEdited = false;
+
+    this->setSaveEnabled(false);
 
     contextsModel = new QStringListModel(this);
     ui->listViewContexts->setModel(contextsModel);
@@ -93,6 +92,8 @@ void MainWindow::initializeToolbars()
     mainToolbar->setAllowedAreas(Qt::TopToolBarArea);
 
     mainToolbar->addAction(actionNewKubeConfig);
+    mainToolbar->addAction(actionSaveKubeConfig);
+    mainToolbar->addAction(actionSaveAsKubeConfig);
     mainToolbar->addSeparator();
     mainToolbar->addAction(actionShowSettingsDialog);
     mainToolbar->addAction(actionQuitApp);
@@ -103,6 +104,7 @@ void MainWindow::initializeToolbars()
     devToolbar = new QToolBar(tr("Developer toolbar"), this);
     devToolbar->addAction(actionDevGoToHome);
     devToolbar->addAction(actionDevGoToMerge);
+    devToolbar->addAction(this->actionDevDumpKubeConfig);
     this->addToolBar(Qt::BottomToolBarArea, devToolbar);
 #endif
 }
@@ -113,6 +115,8 @@ void MainWindow::initializeMenus()
 
     fileMenu = this->menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(this->actionNewKubeConfig);
+    fileMenu->addAction(this->actionSaveKubeConfig);
+    fileMenu->addAction(this->actionSaveAsKubeConfig);
     fileMenu->addSeparator();
     fileMenu->addAction(actionShowSettingsDialog);
     fileMenu->addAction(actionQuitApp);
@@ -121,6 +125,7 @@ void MainWindow::initializeMenus()
     devMenu = this->menuBar()->addMenu(tr("&Developer"));
     devMenu->addAction(this->actionDevGoToHome);
     devMenu->addAction(this->actionDevGoToMerge);
+    devMenu->addAction(this->actionDevDumpKubeConfig);
 #endif
 }
 
@@ -128,6 +133,8 @@ void MainWindow::createActions()
 {
     kTrace;
     const QIcon iconNewKubeConfig = QIcon::fromTheme("document-new", QIcon(":/icons/document-new"));
+    const QIcon iconSaveKubeConfig = QIcon::fromTheme("document-save", QIcon(":/icons/document-save"));
+    const QIcon iconSaveAsKubeConfig = QIcon::fromTheme("document-save-as", QIcon(":/icons/document-save-as"));
     const QIcon iconQuit = QIcon::fromTheme("process-stop", QIcon(":/icons/process-stop"));
     const QIcon iconSettings = QIcon::fromTheme("configure", QIcon(":/icons/configure"));
     const QIcon iconGoHome = QIcon::fromTheme("go-home", QIcon(":/icons/go-home"));
@@ -135,6 +142,7 @@ void MainWindow::createActions()
 
     QIcon iconMergeDev(QPixmap::fromImage(tintImage(QImage("://icons/edit-copy"), QColor(255, 0, 0), 1.0)));
     QIcon iconGoHomeDev(QPixmap::fromImage(tintImage(QImage("://icons/go-home"), QColor(255, 0, 0), 1.0)));
+    QIcon iconDumpKubeconfigDev(QPixmap::fromImage(tintImage(QImage("://icons/configure"), QColor(255, 0, 0), 1.0)));
 
     actionNewKubeConfig = new QAction(iconNewKubeConfig, tr("&New KubeConfig file..."), this);
     actionNewKubeConfig->setShortcuts(QKeySequence::New);
@@ -151,6 +159,17 @@ void MainWindow::createActions()
     actionShowSettingsDialog->setStatusTip(tr("Setup application preferences and settings"));
     connect(actionShowSettingsDialog, &QAction::triggered, this, &MainWindow::showSettingsDialog);
 
+    actionSaveKubeConfig = new QAction(iconSaveKubeConfig, tr("&Save"), this);
+    actionSaveKubeConfig->setShortcuts(QKeySequence::Save);
+    actionSaveKubeConfig->setStatusTip(tr("Save current kubeconfig"));
+
+    connect(actionSaveKubeConfig, &QAction::triggered, this, [=]()
+            { this->kubeConfig->save(); });
+
+    actionSaveAsKubeConfig = new QAction(iconSaveAsKubeConfig, tr("&Save as..."), this);
+    actionSaveAsKubeConfig->setShortcuts(QKeySequence::SaveAs);
+    actionSaveAsKubeConfig->setStatusTip(tr("Save current kubeconfig with different name"));
+
 #ifdef QT_DEBUG
     actionDevGoToHome = new QAction(iconGoHomeDev, tr("Stacked widget: home"), this);
     actionDevGoToHome->setStatusTip(tr("Make central widget stack go to home page"));
@@ -163,6 +182,12 @@ void MainWindow::createActions()
 
     connect(actionDevGoToMerge, &QAction::triggered, this, [=]()
             { ui->stackedWidget->setCurrentIndex(2); });
+
+    actionDevDumpKubeConfig = new QAction(iconDumpKubeconfigDev, tr("Dump current KubeConfig"), this);
+    actionDevDumpKubeConfig->setStatusTip(tr("Dump current KubeConfig"));
+
+    connect(actionDevDumpKubeConfig, &QAction::triggered, this, [=]()
+            { KubeConfig::debug(this->kubeConfig); });
 #endif
 }
 
@@ -269,14 +294,11 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
     path.append("/");
     path.append(index.data().toString());
 
-    KubeParser parser(path, this);
+    KubeParser *parser = new KubeParser(path, this);
+    // connect(&parser, &KubeParser::errorLoadingFile, this, &MainWindow::errorLoadingFileParser);
+    this->kubeConfig = new KubeConfig(parser->load());
 
-    connect(&parser, &KubeParser::errorLoadingFile, this, &MainWindow::errorLoadingFileParser);
-    // connect(&parser, &KubeParser::contextsLoaded, this, &MainWindow::contextModelUpdated);
-    connect(&parser, &KubeParser::kubeConfigLoaded, this, &MainWindow::kubeConfigUpdated);
-
-    parser.load();
-    //    systemTrayIcon->showMessage("Test", "test 2",QSystemTrayIcon::Information);
+    this->kubeConfigUpdated();
 }
 
 void MainWindow::contextModelUpdated(const QStringList contexts)
@@ -288,7 +310,7 @@ void MainWindow::contextModelUpdated(const QStringList contexts)
 void MainWindow::errorLoadingFileParser(const QString message)
 {
     kTrace;
-    QMessageBox::critical(this, "Error parsing file", message);
+    QMessageBox::critical(this, tr("Error parsing file"), message);
 }
 
 void MainWindow::showSettingsDialog()
@@ -400,7 +422,6 @@ void MainWindow::createTrayIcon()
 
     connect(systemTrayIcon, &QSystemTrayIcon::activated, this, &MainWindow::on_systemTray_clicked);
 }
-
 void MainWindow::on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason)
 {
     kTrace;
@@ -459,29 +480,26 @@ void MainWindow::on_listViewContexts_activated(const QModelIndex &index)
 {
     kTrace;
     qDebug() << "Context activated:" << index.data().toString();
-    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
-    // this->ui->groupBoxSelectedContext->setVisible(true);
-    //    qDebug() << "Contexts loaded:" << this->contexts->size();
-    //    for (auto i = this->contexts->begin(), end = this->contexts->end(); i != end; ++i)
-    //    {
-    //        KubeContext current = *i;
-    //        if (current.name == index.data().toString())
-    //        {
-    //            this->selectedContext = current;
-    //            emit contextHasBeenSelected();
-    //            return;
-    //        }
-    //    }
+    KubeContextMap *clist = this->kubeConfig->contexts();
+    qDebug() << "[P] Contexts:" << clist->size();
+
+    for (auto i = this->kubeConfig->contexts()->begin(), end = this->kubeConfig->contexts()->end(); i != end; ++i)
+    {
+        KubeContext current = *i;
+        if (current.name == index.data().toString())
+        {
+            this->selectedContext = current;
+            emit contextHasBeenSelected();
+            return;
+        }
+    }
 }
 
-void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
+void MainWindow::kubeConfigUpdated()
 {
     kTrace;
     qDebug() << "KubeConfig has been updated";
-    this->kubeConfig = kConfig;
-
-    qDebug() << "[D] Contexts:" << kConfig->contexts->size();
-    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
+    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts()->size();
 
     KubeConfigUtils kubeUtils(this->kubeConfig, this);
 
@@ -504,13 +522,25 @@ void MainWindow::kubeConfigUpdated(KubeConfig *kConfig)
         qDebug() << "[DEV] Current kubeconfig stored at:" << filepath;
     }
 #endif
-    qDebug() << "[P] Contexts:" << this->kubeConfig->contexts->size();
 }
 
 void MainWindow::onContextSelected()
 {
     kTrace;
     qDebug() << "New context selected:" << this->selectedContext.name;
+    ui->lineEditContextName->setText(this->selectedContext.name);
+    ui->lineEditContextName->setReadOnly(true);
+    QStringListModel *contextClustersModel = new QStringListModel(this->kubeConfig->clustersNames());
+    QStringListModel *userClustersModel = new QStringListModel(this->kubeConfig->usersNames());
+
+    ui->comboBoxCluster->setModel(contextClustersModel);
+    ui->comboBoxCluster->setEnabled(false);
+    ui->comboBoxUser->setModel(userClustersModel);
+    ui->comboBoxUser->setEnabled(false);
+
+    this->contextHasBeenEdited = false;
+
+    this->ui->groupBoxSelectedContext->setVisible(true);
 }
 
 void MainWindow::updateContextInformationText()
@@ -519,29 +549,6 @@ void MainWindow::updateContextInformationText()
     QString text(QString("Cluster %1\n    User: %2\n").arg(this->selectedContext.name, this->selectedContext.name));
     ui->textEditContextInformation->setMarkdown(text);
     ui->lineEditContextName->setText(this->selectedContext.name);
-}
-
-void MainWindow::on_actionEditClusters_triggered()
-{
-    kTrace;
-    ClusterEditor *editorWidget = new ClusterEditor(this->kubeConfig, this);
-    editorWidget->setWindowFlags(Qt::Tool | Qt::Dialog);
-    editorWidget->show();
-}
-
-void MainWindow::on_actionEditUsers_triggered()
-{
-    kTrace;
-}
-
-void MainWindow::on_actionAbout_triggered()
-{
-    kTrace;
-}
-
-void MainWindow::on_actionNew_KubeConfig_file_triggered()
-{
-    kTrace;
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -640,11 +647,31 @@ void MainWindow::onEditContext(const QModelIndex &index)
 {
     kTrace;
     qDebug() << "Context to edit:" << index.data().toString();
+    qDebug() << "Contexts:" << this->kubeConfig->contexts()->size();
 
-    qDebug() << "Contexts:" << this->kubeConfig->contexts->size();
     KubeConfigUtils kubeUtils(this->kubeConfig, this);
     auto *context = kubeUtils.getContextByName(index.data().toString());
 
     qDebug() << context->name;
-    // ContextEditor *contextEditor = new ContextEditor(this);
+    ContextEditor contextEditor(context, this->kubeConfig, false, this);
+    contextEditor.setModal(true);
+
+    connect(&contextEditor, &ContextEditor::contextSaved, this, [=](KubeContext *newContext)
+            { 
+                qDebug() << "Context has been edited"; 
+                this->contextHasBeenEdited = true;
+                KubeConfig::debug(this->kubeConfig);
+                this->kubeConfig->updateContext(context->name, newContext ); 
+                emit pendingChangesToSave();
+                this->setSaveEnabled(true);
+                KubeConfig::debug(this->kubeConfig); 
+                this->kubeConfigUpdated(); });
+
+    contextEditor.exec();
+}
+
+void MainWindow::setSaveEnabled(bool state)
+{
+    this->actionSaveKubeConfig->setEnabled(state);
+    this->actionSaveAsKubeConfig->setEnabled(state);
 }

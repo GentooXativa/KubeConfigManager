@@ -35,7 +35,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 protected:
@@ -51,38 +51,28 @@ private slots:
     void errorLoadingFileParser(const QString message);
 
     void contextModelUpdated(const QStringList contexts);
-    void kubeConfigUpdated(KubeConfig *kConfig);
+    void kubeConfigUpdated();
 
     void loadSettings();
     void clearView();
     void initializeApp();
     void reloadDefaultConfiguration();
-
     void on_actionSwitchContext_triggered();
     void on_listViewContexts_activated(const QModelIndex &index);
-
     void onContextSelected();
     void updateContextInformationText();
-
-    void on_actionEditClusters_triggered();
-
-    void on_actionEditUsers_triggered();
-
     void on_systemTray_clicked(QSystemTrayIcon::ActivationReason reason);
-
-    void on_actionAbout_triggered();
-
-    void on_actionNew_KubeConfig_file_triggered();
-
     void on_actionToggleFilesPanel_toggled(bool arg1);
-
     void onMergeFilesAction();
     void onNewKubeConfigFile();
     void onReloadTriggered();
     void showSettingsDialog();
     void onEditContext(const QModelIndex &index);
+    void setSaveEnabled(bool);
+
 signals:
     void contextHasBeenSelected();
+    void pendingChangesToSave();
     void closeContextSwitcher();
 
 private:
@@ -104,6 +94,8 @@ private:
 
     // actions
     QAction *actionNewKubeConfig;
+    QAction *actionSaveKubeConfig;
+    QAction *actionSaveAsKubeConfig;
     QAction *actionQuitApp;
     QAction *actionShowSettingsDialog;
 
@@ -126,11 +118,11 @@ private:
     QSystemTrayIcon *systemTrayIcon;
     QIcon *appIcon;
 
-    KubeContextList *contexts;
     KubeContext selectedContext;
     KubeConfig *kubeConfig;
 
     bool showFilesPanel;
+    bool contextHasBeenEdited;
 
     /**
      * developer stuff
@@ -141,6 +133,7 @@ private:
 
     QAction *actionDevGoToHome;
     QAction *actionDevGoToMerge;
+    QAction *actionDevDumpKubeConfig;
 
 #endif
 };

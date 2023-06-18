@@ -4,6 +4,8 @@
     </qresource>
     <qresource prefix="/icons">
         <file alias="document-new">assets/oxygen-icons/scalable/actions/document-new.svgz</file>
+        <file alias="document-save">assets/oxygen-icons/scalable/actions/document-save.svgz</file>
+        <file alias="document-save-as">assets/oxygen-icons/scalable/actions/document-save-as.svgz</file>
         <file alias="process-stop">assets/oxygen-icons/scalable/actions/process-stop.svgz</file>
         <file alias="go-home">assets/oxygen-icons/scalable/actions/go-home.svgz</file>
         <file alias="edit-copy">assets/oxygen-icons/scalable/actions/edit-copy.svgz</file>

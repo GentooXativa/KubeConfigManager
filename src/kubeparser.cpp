@@ -10,10 +10,10 @@ KubeParser::KubeParser(QString path, QObject *parent) : QObject(parent)
 {
     this->path = path;
 
-    this->contexts = new KubeContextList();
-    this->clusters = new KubeClusterList();
-    this->users = new KubeUserList();
-    this->kubeConfig = new KubeConfig();
+    this->contexts = new KubeContextMap();
+    this->clusters = new KubeClusterMap();
+    this->users = new KubeUserMap();
+    this->kubeConfig = new KubeConfig(this);
 
     qDebug() << "Initializing parser for file:" << path;
 }
@@ -23,24 +23,23 @@ KubeParser::~KubeParser()
     delete this->contexts;
     delete this->clusters;
     delete this->users;
-    delete this->kubeConfig;
 }
 
-void KubeParser::load()
+KubeConfig *KubeParser::load()
 {
     QFile file(path);
 
-    this->kubeConfig = new KubeConfig();
-    this->kubeConfig->originalFilePath = &path;
+    this->kubeConfig = new KubeConfig(this);
+    this->kubeConfig->setOriginalFilePath(path);
 
-    this->contexts = new KubeContextList();
-    this->clusters = new KubeClusterList();
-    this->users = new KubeUserList();
+    this->contexts = new KubeContextMap();
+    this->clusters = new KubeClusterMap();
+    this->users = new KubeUserMap();
 
     if (!file.exists())
     {
         emit errorLoadingFile("File not found or cannot be accessed!");
-        return;
+        return new KubeConfig(this);
     }
 
     YAML::Node config = YAML::LoadFile(path.toStdString());
@@ -49,7 +48,7 @@ void KubeParser::load()
     {
         QString currentContext = QString::fromStdString(config["current-context"].as<std::string>());
         qDebug() << "This config file has this context as current:" << currentContext;
-        this->kubeConfig->currentContext = currentContext;
+        this->kubeConfig->setCurrentContext(currentContext);
     }
 
     if (config["clusters"])
@@ -97,9 +96,9 @@ void KubeParser::load()
                 clusterObj.proxyUrl = QString::fromStdString(cluster["cluster"]["proxy-url"].as<std::string>());
             }
 
-            this->clusters->append(clusterObj);
+            this->clusters->insert(clusterObj.name, clusterObj);
         }
-        this->kubeConfig->clusters = this->clusters;
+        this->kubeConfig->setClusters(this->clusters);
         qDebug() << "Cluster definitions lodaded:" << this->clusters->size();
     }
 
@@ -234,9 +233,9 @@ void KubeParser::load()
                     }
                 }
             }
-            this->users->append(userObj);
+            this->users->insert(userObj.name, userObj);
         }
-        this->kubeConfig->users = this->users;
+        this->kubeConfig->setUsers(this->users);
     }
 
     if (config["contexts"])
@@ -259,13 +258,13 @@ void KubeParser::load()
             if (!ctxUserObj)
             {
                 emit errorLoadingFile(QString("Error loading context %1, user %2 cannot be found!").arg(contextObj.name, ctxUser));
-                return;
+                return new KubeConfig(this);
             }
 
             if (!ctxClusterObj)
             {
                 emit errorLoadingFile(QString("Error loading context %1, cluster %2 cannot be found!").arg(contextObj.name, ctxCluster));
-                return;
+                return new KubeConfig(this);
             }
 
             contextObj.cluster = ctxClusterObj;
@@ -296,13 +295,13 @@ void KubeParser::load()
                 contextObj.extensions = extensions;
             }
 
-            this->contexts->append(contextObj);
+            this->contexts->insert(contextObj.name, contextObj);
         }
 
-        this->kubeConfig->contexts = this->contexts;
+        this->kubeConfig->setContexts(this->contexts);
     }
 
-    emit kubeConfigLoaded(this->kubeConfig);
+    return this->kubeConfig;
 }
 
 bool KubeParser::save()
@@ -324,18 +323,18 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     emitter << YAML::Key << "apiVersion" << YAML::Value << "v1";
     emitter << YAML::Key << "kind" << YAML::Value << "Config";
 
-    if (!config->currentContext.isEmpty())
+    if (!config->currentContext().isEmpty())
     {
-        emitter << YAML::Key << "current-context" << YAML::Value << config->currentContext.toStdString();
+        emitter << YAML::Key << "current-context" << YAML::Value << config->currentContext().toStdString();
     }
 
     // start of clusters sequence
     emitter << YAML::Key << "clusters";
 
-    if (!config->clusters->isEmpty())
+    if (!config->clusters()->isEmpty())
     {
         emitter << YAML::BeginSeq;
-        for (QList<KubeCluster>::iterator it = config->clusters->begin(); it != config->clusters->end(); ++it)
+        for (QMap<QString, KubeCluster>::iterator it = config->clusters()->begin(); it != config->clusters()->end(); ++it)
         {
             KubeCluster currentCluster = *it;
             emitter << YAML::BeginMap;
@@ -381,10 +380,10 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     // start of users sequence
     emitter << YAML::Key << "users";
 
-    if (!config->users->isEmpty())
+    if (!config->users()->isEmpty())
     {
         emitter << YAML::BeginSeq;
-        for (QList<KubeUser>::iterator it = config->users->begin(); it != config->users->end(); ++it)
+        for (QMap<QString, KubeUser>::iterator it = config->users()->begin(); it != config->users()->end(); ++it)
         {
             KubeUser currentuser = *it;
             emitter << YAML::BeginMap;
@@ -431,10 +430,10 @@ QString KubeParser::dumpConfig(KubeConfig *config)
     // start of contexts sequence
     emitter << YAML::Key << "contexts";
 
-    if (!config->contexts->isEmpty())
+    if (!config->contexts()->isEmpty())
     {
         emitter << YAML::BeginSeq;
-        for (QList<KubeContext>::iterator it = config->contexts->begin(); it != config->contexts->end(); ++it)
+        for (QMap<QString, KubeContext>::iterator it = config->contexts()->begin(); it != config->contexts()->end(); ++it)
         {
             KubeContext currentContext = *it;
             emitter << YAML::BeginMap;
@@ -489,13 +488,5 @@ QString KubeParser::dumpConfig(KubeConfig *config)
 KubeConfig *KubeParser::createEmptyConfig()
 {
     KubeConfig *nConfig = new KubeConfig();
-
-    nConfig->originalFilePath = new QString("");
-    nConfig->preferences = 0;
-
-    nConfig->clusters = new KubeClusterList();
-    nConfig->users = new KubeUserList();
-    nConfig->contexts = new KubeContextList();
-
     return nConfig;
 }
