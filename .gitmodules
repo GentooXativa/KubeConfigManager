@@ -7,3 +7,6 @@
 [submodule "assets/oxygen-icons"]
 	path = assets/oxygen-icons
 	url = https://github.com/KDE/oxygen-icons.git
+[submodule "assets/breeze-icons"]
+	path = assets/breeze-icons
+	url = https://github.com/KDE/oxygen-icons.git
