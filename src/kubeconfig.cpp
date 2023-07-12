@@ -4,6 +4,7 @@
 #include <QMessageBox>
 
 #include "kubeconfig.h"
+#include "kubeparser.h"
 
 KubeConfig::KubeConfig(QObject *parent) : QObject(parent)
 {
@@ -187,8 +188,6 @@ bool KubeConfig::save()
 
 bool KubeConfig::saveAs(const QString &path)
 {
-    bool createBackup = false;
-    int historySize = -1;
     QString backupPath;
     QDir backupDir;
 
@@ -197,6 +196,8 @@ bool KubeConfig::saveAs(const QString &path)
 
     if (appSettings.contains("backup/configuration"))
     {
+        bool createBackup = false;
+        int historySize = -1;
         createBackup = appSettings.value("backup/configuration").toBool();
         if (createBackup)
         {
@@ -232,7 +233,7 @@ bool KubeConfig::saveAs(const QString &path)
         {
             QFileInfo filename(path);
             QStringList prefix(QString("%1-*").arg(filename.baseName()));
-            QFileInfoList files = backupDir.entryInfoList(prefix, QDir::Files, QDir::Time | QDir::Reversed);
+            QFileInfoList files = backupDir.entryInfoList(prefix, QDir::Files, QDir::Time);
             qDebug() << "[Save] Total files:" << files.size() << "Prefixes:" << prefix;
 
             int currentPos = 0;
@@ -246,9 +247,48 @@ bool KubeConfig::saveAs(const QString &path)
                 else
                 {
                     qDebug() << "[Save] Removing" << fileInfo.baseName();
+                    if (!QFile::remove(fileInfo.absoluteFilePath()))
+                    {
+                        QMessageBox::critical(nullptr, tr("Error removing backup"), QString(tr("Error removing backup file %1")).arg(fileInfo.absoluteFilePath()));
+                        return false;
+                    }
+                    qDebug() << "[Save] Removed: " << fileInfo.baseName();
                 }
+            }
+
+            QString backupFilePath(
+                QString("%1/%2-%3")
+                    .arg(backupPath)
+                    .arg(filename.baseName())
+                    .arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss")));
+
+            qDebug() << "[Save] Creating backup file:" << backupFilePath;
+
+            if (!QFile::copy(this->m_originalFilePath, backupFilePath))
+            {
+                QMessageBox::critical(nullptr, tr("Error creating backup"), QString(tr("Error creating backup file %1")).arg(backupFilePath));
+                return false;
             }
         }
     }
-    return false;
+
+    QFile file(path);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(nullptr, tr("Error opening file"), QString(tr("Error opening file %1")).arg(path));
+        return false;
+    }
+
+    QString yaml = KubeParser::dumpConfig(this);
+
+    QTextStream out(&file);
+    out << yaml;
+    file.close();
+
+    this->m_originalFilePath = path;
+
+    qDebug() << "[Save] Saved kubeconfig as:" << path << "without errors";
+
+    return true;
 }
