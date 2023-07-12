@@ -290,5 +290,6 @@ bool KubeConfig::saveAs(const QString &path)
 
     qDebug() << "[Save] Saved kubeconfig as:" << path << "without errors";
 
+    QMessageBox::information(nullptr, tr("Kubeconfig saved"), QString(tr("Kubeconfig saved as %1")).arg(path));
     return true;
 }

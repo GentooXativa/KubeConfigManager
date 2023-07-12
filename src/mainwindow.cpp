@@ -170,6 +170,10 @@ void MainWindow::createActions()
     actionSaveAsKubeConfig->setShortcuts(QKeySequence::SaveAs);
     actionSaveAsKubeConfig->setStatusTip(tr("Save current kubeconfig with different name"));
 
+    connect(ui->pushButtonCloneFile, &QPushButton::clicked, this, &MainWindow::onCloneConfigFile);
+    connect(ui->pushButtonDeleteFile, &QPushButton::clicked, this, &MainWindow::onDeleteConfigFile);
+    connect(ui->pushButtonRenameFile, &QPushButton::clicked, this, &MainWindow::onRenameConfigFile);
+
 #ifdef QT_DEBUG
     actionDevGoToHome = new QAction(iconGoHomeDev, tr("Stacked widget: home"), this);
     actionDevGoToHome->setStatusTip(tr("Make central widget stack go to home page"));
@@ -674,4 +678,149 @@ void MainWindow::setSaveEnabled(bool state)
 {
     this->actionSaveKubeConfig->setEnabled(state);
     this->actionSaveAsKubeConfig->setEnabled(state);
+}
+
+void MainWindow::onCloneConfigFile()
+{
+    kTrace;
+
+    int selectedIndexes = ui->listViewFiles->selectionModel()->selectedIndexes().size();
+    qDebug() << "Current selection count:" << selectedIndexes;
+
+    if (selectedIndexes == 0)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You must select a file to clone"));
+        return;
+    }
+
+    if (selectedIndexes > 1)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You can only clone one file at a time"));
+        return;
+    }
+
+    QString selectedIndexText = ui->listViewFiles->selectionModel()->selectedIndexes().at(0).data().toString();
+    qDebug() << "Selected index:" << selectedIndexText;
+    QString selectedFilePath = QString("%1/%2").arg(this->workingDirectory, selectedIndexText);
+
+    QString newConfigFilepath = QFileDialog::getSaveFileName(this, tr("Save kubeconfig file"), this->workingDirectory, tr("Kubeconfig files (*)"));
+    qDebug() << "New config file:" << newConfigFilepath;
+
+    if (newConfigFilepath.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("You must provide a valid file name"));
+        return;
+    }
+
+    qDebug() << "Copying file:" << selectedFilePath << "to" << newConfigFilepath;
+
+    if (!QFile::copy(selectedFilePath, newConfigFilepath))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("Error copying file"));
+        return;
+    }
+
+    QMessageBox::information(this, tr("Success"), tr("File copied successfully"));
+    this->onReloadTriggered();
+}
+
+void MainWindow::onRenameConfigFile()
+{
+    kTrace;
+
+    int selectedIndexes = ui->listViewFiles->selectionModel()->selectedIndexes().size();
+    qDebug() << "Current selection count:" << selectedIndexes;
+
+    if (selectedIndexes == 0)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You must select a file to rename"));
+        return;
+    }
+
+    if (selectedIndexes > 1)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You can only rename one file at a time"));
+        return;
+    }
+
+    QString selectedIndexText = ui->listViewFiles->selectionModel()->selectedIndexes().at(0).data().toString();
+    qDebug() << "Selected index:" << selectedIndexText;
+    QString selectedFilePath = QString("%1/%2").arg(this->workingDirectory, selectedIndexText);
+
+    QString newConfigFilepath = QFileDialog::getSaveFileName(this, tr("Rename kubeconfig file"), this->workingDirectory, tr("Kubeconfig files (*)"));
+    qDebug() << "New config file path:" << newConfigFilepath;
+
+    if (newConfigFilepath.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("You must provide a valid file name"));
+        return;
+    }
+
+    qDebug() << "Renaming file from:" << selectedFilePath << "to" << newConfigFilepath;
+    if (!QFile::rename(selectedFilePath, newConfigFilepath))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("Error renaming file"));
+        return;
+    }
+
+    QMessageBox::information(this, tr("Success"), tr("File renamed successfully"));
+    this->onReloadTriggered();
+}
+
+void MainWindow::onDeleteConfigFile()
+{
+    kTrace;
+
+    int selectedIndexes = ui->listViewFiles->selectionModel()->selectedIndexes().size();
+    qDebug() << "Current selection count:" << selectedIndexes;
+
+    if (selectedIndexes == 0)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You must select a file to remove"));
+        return;
+    }
+
+    QString title;
+    QString message;
+
+    if (selectedIndexes == 1)
+    {
+        title = tr("Do you want to remove this file?");
+        message = tr("Do you want to remove %1 file?").arg(selectedIndexes);
+    }
+    else
+    {
+        title = tr("Do you want to remove this files?");
+        message = tr("Do you want to remove %1 files?").arg(selectedIndexes);
+    }
+
+    message.append("\nWarning: This action cannot be undone!");
+
+    QMessageBox msg_box(QMessageBox::Question, title, message,
+                        QMessageBox::Yes | QMessageBox::No);
+    msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
+    msg_box.setButtonText(QMessageBox::No, tr("No"));
+    if (msg_box.exec() == QMessageBox::Yes)
+    {
+        for (const auto &index : ui->listViewFiles->selectionModel()->selectedIndexes())
+        {
+            QString selectedIndexText = index.data().toString();
+            qDebug() << "Selected index:" << selectedIndexText;
+            QString selectedFilePath = QString("%1/%2").arg(this->workingDirectory, selectedIndexText);
+
+            qDebug() << "Removing file:" << selectedFilePath;
+            if (!QFile::remove(selectedFilePath))
+            {
+                QMessageBox::critical(this, tr("Error"), QString(tr("Error removing file %1")).arg(selectedFilePath));
+                return;
+            }
+        }
+
+        QMessageBox::information(this, tr("Success"), tr("File(s) removed successfully"));
+        this->onReloadTriggered();
+    }
+    else
+    {
+        return;
+    }
 }

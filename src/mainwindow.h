@@ -69,6 +69,9 @@ private slots:
     void showSettingsDialog();
     void onEditContext(const QModelIndex &index);
     void setSaveEnabled(bool);
+    void onCloneConfigFile();
+    void onRenameConfigFile();
+    void onDeleteConfigFile();
 
 signals:
     void contextHasBeenSelected();
