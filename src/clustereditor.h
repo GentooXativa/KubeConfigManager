@@ -1,9 +1,10 @@
 #ifndef CLUSTEREDITOR_H
 #define CLUSTEREDITOR_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QStringListModel>
 #include <QFileDialog>
+#include <QAction>
 
 #include "KubeConfManager.h"
 #include "kubeconfigutils.h"
@@ -13,7 +14,7 @@ namespace Ui
     class ClusterEditor;
 }
 
-class ClusterEditor : public QWidget
+class ClusterEditor : public QDialog
 {
     Q_OBJECT
 
@@ -22,7 +23,7 @@ public:
     ~ClusterEditor();
 
 private slots:
-    void on_listViewClusterList_activated(const QModelIndex &index);
+    // legacy
     void on_pushButtonSaveCluster_clicked();
     void on_pushButtonCloneCluster_clicked();
     void on_pushButtonRevertCluster_clicked();
@@ -30,6 +31,9 @@ private slots:
     void on_toolButtonRemoveCluster_triggered(QAction *arg1);
     void fillUiWithClusterInfo(KubeCluster *cluster);
     void on_pushButtonCaFileSearch_clicked();
+
+    // new
+    void onClusterSelected(const QModelIndex &index);
 
 signals:
     void clusterInfoHasBeenEdited();
@@ -41,6 +45,8 @@ private:
     KubeCluster *selectedCluster;
 
     QStringListModel *clustersModel;
+
+    void updateUI();
 };
 
 #endif // CLUSTEREDITOR_H

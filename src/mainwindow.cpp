@@ -95,6 +95,8 @@ void MainWindow::initializeToolbars()
     mainToolbar->addAction(actionSaveKubeConfig);
     mainToolbar->addAction(actionSaveAsKubeConfig);
     mainToolbar->addSeparator();
+    mainToolbar->addAction(actionShowClusterEditor);
+    mainToolbar->addSeparator();
     mainToolbar->addAction(actionShowSettingsDialog);
     mainToolbar->addAction(actionQuitApp);
 
@@ -139,6 +141,8 @@ void MainWindow::createActions()
     const QIcon iconSettings = QIcon::fromTheme("configure", QIcon(":/icons/configure"));
     const QIcon iconGoHome = QIcon::fromTheme("go-home", QIcon(":/icons/go-home"));
     const QIcon iconMerge = QIcon::fromTheme("edit-copy", QIcon(":/icons/edit-copy"));
+    const QIcon iconEditClusters = QIcon::fromTheme("edit-clusters", QIcon(":/icons/edit-clusters"));
+    const QIcon iconEditUsers = QIcon::fromTheme("edit-users", QIcon(":/icons/edit-users"));
 
     QIcon iconMergeDev(QPixmap::fromImage(tintImage(QImage("://icons/edit-copy"), QColor(255, 0, 0), 1.0)));
     QIcon iconGoHomeDev(QPixmap::fromImage(tintImage(QImage("://icons/go-home"), QColor(255, 0, 0), 1.0)));
@@ -173,6 +177,10 @@ void MainWindow::createActions()
     connect(ui->pushButtonCloneFile, &QPushButton::clicked, this, &MainWindow::onCloneConfigFile);
     connect(ui->pushButtonDeleteFile, &QPushButton::clicked, this, &MainWindow::onDeleteConfigFile);
     connect(ui->pushButtonRenameFile, &QPushButton::clicked, this, &MainWindow::onRenameConfigFile);
+
+    actionShowClusterEditor = new QAction(iconEditClusters, tr("&Edit clusters..."), this);
+    actionShowClusterEditor->setStatusTip(tr("Edit clusters on this kubeconfig"));
+    connect(actionShowClusterEditor, &QAction::triggered, this, &MainWindow::onEditClusters);
 
 #ifdef QT_DEBUG
     actionDevGoToHome = new QAction(iconGoHomeDev, tr("Stacked widget: home"), this);
@@ -274,6 +282,7 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
         ui->pushButtonCloneFile->setEnabled(false);
         ui->pushButtonRenameFile->setEnabled(false);
         ui->stackedWidget->setCurrentIndex(0);
+        actionShowClusterEditor->setEnabled(false);
         return;
     }
     else if (ui->listViewFiles->selectionModel()->selectedIndexes().size() == 1)
@@ -283,6 +292,7 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
         ui->pushButtonCloneFile->setEnabled(true);
         ui->pushButtonRenameFile->setEnabled(true);
         ui->stackedWidget->setCurrentIndex(1);
+        actionShowClusterEditor->setEnabled(true);
     }
     else
     {
@@ -291,6 +301,7 @@ void MainWindow::on_listViewFiles_activated(const QModelIndex &index)
         ui->pushButtonCloneFile->setEnabled(false);
         ui->pushButtonRenameFile->setEnabled(false);
         ui->stackedWidget->setCurrentIndex(0);
+        actionShowClusterEditor->setEnabled(false);
         return;
     }
 
@@ -823,4 +834,14 @@ void MainWindow::onDeleteConfigFile()
     {
         return;
     }
+}
+
+void MainWindow::onEditClusters()
+{
+    kTrace;
+    qDebug() << "Edit clusters";
+
+    ClusterEditor *clusterEditor = new ClusterEditor(this->kubeConfig, this);
+    clusterEditor->setModal(true);
+    clusterEditor->show();
 }

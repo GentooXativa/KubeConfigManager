@@ -10,5 +10,7 @@
         <file alias="go-home">assets/oxygen-icons/scalable/actions/go-home.svgz</file>
         <file alias="edit-copy">assets/oxygen-icons/scalable/actions/edit-copy.svgz</file>
         <file alias="configure">assets/oxygen-icons/scalable/actions/configure.svgz</file>
+        <file alias="edit-clusters">assets/oxygen-icons/scalable/places/server-database.svgz</file>
+        <file alias="edit-users">assets/oxygen-icons/scalable/places/repository.svgz</file>
     </qresource>
 </RCC>

@@ -72,6 +72,7 @@ private slots:
     void onCloneConfigFile();
     void onRenameConfigFile();
     void onDeleteConfigFile();
+    void onEditClusters();
 
 signals:
     void contextHasBeenSelected();
@@ -101,6 +102,7 @@ private:
     QAction *actionSaveAsKubeConfig;
     QAction *actionQuitApp;
     QAction *actionShowSettingsDialog;
+    QAction *actionShowClusterEditor;
 
     // toolbaes
     QToolBar *mainToolbar;

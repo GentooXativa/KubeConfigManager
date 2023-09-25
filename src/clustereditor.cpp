@@ -1,7 +1,7 @@
 #include "clustereditor.h"
 #include "ui_clustereditor.h"
 
-ClusterEditor::ClusterEditor(KubeConfig *kubeconfig, QWidget *parent) : QWidget(parent),
+ClusterEditor::ClusterEditor(KubeConfig *kubeconfig, QWidget *parent) : QDialog(parent),
                                                                         ui(new Ui::ClusterEditor)
 {
     ui->setupUi(this);
@@ -9,8 +9,11 @@ ClusterEditor::ClusterEditor(KubeConfig *kubeconfig, QWidget *parent) : QWidget(
     KubeConfigUtils kUtils(kubeconfig);
 
     this->clustersModel = new QStringListModel(kUtils.getClustersStringList());
+
     this->ui->listViewClusterList->setModel(this->clustersModel);
     this->ui->toolButtonRemoveCluster->setEnabled(false);
+
+    connect(ui->listViewClusterList, &QListView::activated, this, &ClusterEditor::onClusterSelected);
 }
 
 ClusterEditor::~ClusterEditor()
@@ -18,10 +21,11 @@ ClusterEditor::~ClusterEditor()
     delete ui;
 }
 
-void ClusterEditor::on_listViewClusterList_activated(const QModelIndex &index)
+void ClusterEditor::onClusterSelected(const QModelIndex &index)
 {
     KubeConfigUtils kUtils(kubeconfig);
     this->selectedCluster = kUtils.getClusterByName(index.data().toString());
+    qDebug() << "Selected cluster: " << this->selectedCluster->name;
 
     this->fillUiWithClusterInfo(this->selectedCluster);
     this->ui->toolButtonRemoveCluster->setEnabled(true);
@@ -115,4 +119,8 @@ void ClusterEditor::on_pushButtonCaFileSearch_clicked()
     this->ui->lineEditCaFile->setText(fileName);
 
     emit clusterInfoHasBeenEdited();
+}
+
+void ClusterEditor::updateUI()
+{
 }
