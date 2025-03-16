@@ -182,6 +182,8 @@ void MainWindow::createActions()
     actionShowClusterEditor->setStatusTip(tr("Edit clusters on this kubeconfig"));
     connect(actionShowClusterEditor, &QAction::triggered, this, &MainWindow::onEditClusters);
 
+    connect(ui->pushButtonRemoveSelectedContext, &QPushButton::clicked, this, &MainWindow::onRemoveSelectedContext);
+
 #ifdef QT_DEBUG
     actionDevGoToHome = new QAction(iconGoHomeDev, tr("Stacked widget: home"), this);
     actionDevGoToHome->setStatusTip(tr("Make central widget stack go to home page"));
@@ -844,4 +846,37 @@ void MainWindow::onEditClusters()
     ClusterEditor *clusterEditor = new ClusterEditor(this->kubeConfig, this);
     clusterEditor->setModal(true);
     clusterEditor->show();
+}
+
+void MainWindow::onRemoveSelectedContext()
+{
+    kTrace;
+    qDebug() << "Removing selected context";
+
+    if (this->selectedContext.name.isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You must select a context to remove"));
+        return;
+    }
+
+    QString title = tr("Do you want to remove this context?");
+    QString message = tr("Do you want to remove %1 context?").arg(this->selectedContext.name);
+    // message.append("\nWarning: This action cannot be undone!");
+
+    QMessageBox msg_box(QMessageBox::Question, title, message,
+                        QMessageBox::Yes | QMessageBox::No);
+    msg_box.setButtonText(QMessageBox::Yes, tr("Yes"));
+    msg_box.setButtonText(QMessageBox::No, tr("No"));
+    if (msg_box.exec() == QMessageBox::Yes)
+    {
+        // this->kubeConfig->removeContext(this->selectedContext.name);
+        this->kubeConfigUpdated();
+        this->contextHasBeenEdited = true;
+        emit pendingChangesToSave();
+        this->setSaveEnabled(true);
+    }
+    else
+    {
+        return;
+    }
 }

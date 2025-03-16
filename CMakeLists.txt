@@ -1,6 +1,20 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.31)
 
 project(KubeConfManager VERSION 0.1 LANGUAGES CXX)
+
+# Opcional: define variables individuales para cada componente de la versión
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 0)
+
+# Opcional: configura un archivo de cabecera con la versión para usarlo en el código
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/src/version.h
+)
+
+# Asegúrate de incluir el directorio del archivo generado
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

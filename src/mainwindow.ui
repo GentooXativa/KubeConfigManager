@@ -49,8 +49,7 @@
              <string>Settings</string>
             </property>
             <property name="icon">
-             <iconset theme="preferences-system">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="preferences-system"/>
             </property>
            </widget>
           </item>
@@ -60,8 +59,7 @@
              <string>Merge configuration files</string>
             </property>
             <property name="icon">
-             <iconset theme="edit-copy">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="edit-copy"/>
             </property>
            </widget>
           </item>
@@ -71,8 +69,7 @@
              <string>Open folder</string>
             </property>
             <property name="icon">
-             <iconset theme="folder-open">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="folder-open"/>
             </property>
            </widget>
           </item>
@@ -91,7 +88,7 @@
               <item>
                <spacer name="horizontalSpacer_9">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -111,7 +108,7 @@
               <item>
                <spacer name="horizontalSpacer_10">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -126,7 +123,7 @@
             <item row="1" column="0">
              <widget class="QListView" name="listViewContexts">
               <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
               </property>
              </widget>
             </item>
@@ -137,10 +134,10 @@
             <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
+               <enum>QSizePolicy::Policy::Maximum</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -184,8 +181,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset theme="system-search">
-                  <normaloff>.</normaloff>.</iconset>
+                 <iconset theme="system-search"/>
                 </property>
                </widget>
               </item>
@@ -194,10 +190,10 @@
             <item>
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Maximum</enum>
+               <enum>QSizePolicy::Policy::Maximum</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -289,7 +285,31 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonRemoveSelectedContext">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="text">
+                    <string>Remove</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -308,10 +328,10 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidgetConfigurationFiles">
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::DockWidgetArea::BottomDockWidgetArea|Qt::DockWidgetArea::LeftDockWidgetArea|Qt::DockWidgetArea::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Configuration Files</string>
@@ -324,16 +344,16 @@
      <item row="0" column="0">
       <widget class="QListView" name="listViewFiles">
        <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
        </property>
        <property name="dragDropMode">
-        <enum>QAbstractItemView::DropOnly</enum>
+        <enum>QAbstractItemView::DragDropMode::DropOnly</enum>
        </property>
        <property name="defaultDropAction">
-        <enum>Qt::ActionMask</enum>
+        <enum>Qt::DropAction::ActionMask</enum>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
+        <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
        </property>
       </widget>
      </item>
@@ -399,8 +419,7 @@
   </widget>
   <action name="actionSettings">
    <property name="icon">
-    <iconset theme="preferences-system">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="preferences-system"/>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -411,8 +430,7 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset theme="system-shutdown">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="system-shutdown"/>
    </property>
    <property name="text">
     <string>Quit</string>
@@ -423,8 +441,7 @@
   </action>
   <action name="actionReload">
    <property name="icon">
-    <iconset theme="view-refresh">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="view-refresh"/>
    </property>
    <property name="text">
     <string>Reload</string>
@@ -432,8 +449,7 @@
   </action>
   <action name="actionSwitchContext">
    <property name="icon">
-    <iconset theme="system-run">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="system-run"/>
    </property>
    <property name="text">
     <string>Switch context</string>
@@ -447,8 +463,7 @@
   </action>
   <action name="actionEditUsers">
    <property name="icon">
-    <iconset theme="contact-new">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="contact-new"/>
    </property>
    <property name="text">
     <string>Edit users</string>
@@ -456,8 +471,7 @@
   </action>
   <action name="actionEditClusters">
    <property name="icon">
-    <iconset theme="applications-engineering">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="applications-engineering"/>
    </property>
    <property name="text">
     <string>Edit clusters</string>
@@ -470,8 +484,7 @@
   </action>
   <action name="actionNewKubeConfigFile">
    <property name="icon">
-    <iconset theme="document-new">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-new"/>
    </property>
    <property name="text">
     <string>New KubeConfig file</string>
@@ -491,8 +504,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="view-sort-ascending">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="view-sort-ascending"/>
    </property>
    <property name="text">
     <string>Toggle files Panel</string>

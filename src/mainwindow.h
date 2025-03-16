@@ -73,6 +73,7 @@ private slots:
     void onRenameConfigFile();
     void onDeleteConfigFile();
     void onEditClusters();
+    void onRemoveSelectedContext();
 
 signals:
     void contextHasBeenSelected();
